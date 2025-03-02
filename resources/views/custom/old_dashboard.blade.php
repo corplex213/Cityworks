@@ -1,30 +1,6 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
-
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    {{ __("You're logged in!") }}
-                </div>
-            </div>
-        </div>@extends('layouts.app')
+@extends('layouts.app')
 
 @section('content')
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Dashboard</title>
-    <link rel="stylesheet" href="{{ asset('frontend/css/dashboard_styles.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-</head>
-<body>
     <div class="header">
         <a href="/public/Dashboard.html" class="logo">
             <img src="{{ asset('img/341835580_3377258052532133_4186880548703356922_n.jpg') }}" alt="CEO">
@@ -95,10 +71,8 @@
             <div id="archivedProjectsContainer" class="archived-projects-container"></div>
         </div>
     </div>
-
-    <script src="{{ asset('frontend/javascript/dashboard_script.js') }}"></script>
-</body>
-</html>
 @endsection
-    </div>
-</x-app-layout>
+
+@section('scripts')
+    <script src="{{ asset('frontend/javascript/dashboard_script.js') }}"></script>
+@endsection
