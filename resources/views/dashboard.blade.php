@@ -6,6 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Dashboard</title>
         <link rel="stylesheet" href="{{ asset('frontend/css/dashboard_styles.css') }}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     </head>
     <body>
     
@@ -85,9 +86,6 @@
                 <div id="archivedProjectsContainer" class="archived-projects-container"></div>
             </div>
         </div>
-    
         <script src="{{ asset('frontend/javascript/dashboard_script.js') }}"></script>
-    
-    {{-- </x-app-layout> --}}
     </body>
     </html>

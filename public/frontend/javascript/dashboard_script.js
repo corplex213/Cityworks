@@ -119,6 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+
     // Load Projects
     const loadProjects = () => {
         projectContainer.innerHTML = ''; // Clear existing projects
@@ -157,6 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.stopPropagation();
                 const projectId = projectBox.getAttribute('data-id');
                 projects = projects.filter((p) => p.id !== projectId);
+                console.log(projects);
                 saveProjects();
                 loadProjects();
             });
@@ -165,9 +167,18 @@ document.addEventListener('DOMContentLoaded', () => {
             projectBox.querySelector('.archive-icon').addEventListener('click', (e) => {
                 e.stopPropagation();
                 const projectId = projectBox.getAttribute('data-id');
-                archiveProject(projectId);
+                const project = projects.find((p) => p.id === projectId);
+            
+                if (project) {
+                    project.group = project.group === 'archived' ? 'default' : 'archived'; // Toggle group
+                    saveProjects();
+                    loadProjects();
+                } else {
+                    console.error(`Project with ID: ${projectId} not found`);
+                }
             });
-
+            
+            // Append to the correct container based on group
             if (project.group === 'default') {
                 projectContainer.appendChild(projectBox);
             } else if (project.group === 'archived') {
@@ -217,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
     archiveLink.addEventListener('click', (e) => {
         e.preventDefault();
         archivePopupWindow.style.display = 'flex';
-        loadProjects(); // Ensure the archived projects are loaded when the popup is displayed
+        loadProjects(); 
     });
 
     // Initial projects load
