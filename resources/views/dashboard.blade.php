@@ -16,11 +16,11 @@
         </x-slot> --}}
     
         <div class="header">
-            <a href="/public/Dashboard.html" class="logo">
+            <a href="{{ route('dashboard') }}" class="logo">
                 <img src="{{ asset('frontend/img/341835580_3377258052532133_4186880548703356922_n.jpg') }}" alt="CEO">
             </a>
             <div class="header-right">
-                <a href="Dashboard.html">Dashboard</a>
+                <a href="{{ route('dashboard') }}">Dashboard</a>
                 <a class="active" href="#projects">Projects</a>
                 <a href="#archived" id="archiveLink">Archive</a>
                 <a href="Profile.html" class="logo">

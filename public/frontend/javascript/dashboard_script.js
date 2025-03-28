@@ -85,15 +85,15 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentProjectBox = null;
 
     // Redirect to Project Template
-    // Redirect to Project Template
-const openProject = (projectId) => {
-    const project = projects.find(p => p.id === projectId);
-    if (project) {
-        const projectName = encodeURIComponent(project.name);
-        const projectDescription = encodeURIComponent(project.description);
-        window.location.href = `ProjectTemplate.html?projectName=${projectName}&projectDescription=${projectDescription}`;
-    }
-};
+    const openProject = (projectId) => {
+        const project = projects.find(p => p.id === projectId);
+        if (project) {
+            const projectName = encodeURIComponent(project.name);
+            const projectDescription = encodeURIComponent(project.description);
+            window.location.href = `/project/${projectName}/${projectDescription}`;
+        }
+    };
+    
 
     // Populate Navigation Pane
     const populateNavigationPane = () => {

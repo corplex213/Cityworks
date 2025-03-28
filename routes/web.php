@@ -34,3 +34,11 @@ Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 //Route::get('/', [LoginController::class, 'LoginPage'])->name('login'); for loginPage sana
 
 // require __DIR__.'/auth.php';
+
+// Route for Projects
+Route::get('/project/{name}/{description}', function ($name, $description) {
+    return view('project', [
+        'name' => urldecode($name),
+        'description' => urldecode($description)
+    ]);
+})->name('project.view');

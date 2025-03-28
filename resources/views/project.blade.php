@@ -4,16 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Project Details</title>
-  <link rel="stylesheet" href="/Capstone Backup 12-31/Capstone/Capstone/public/assets/css/projectTemplate_styles.css">
+  <link rel="stylesheet" href="{{ asset('frontend/css/projectTemplate_styles.css') }}">
   
 </head>
 <body>
   <div class="header">
     <a href="#default" class="logo">
-      <img src="/Capstone Backup 12-31/Capstone/Capstone/public/assets/img/341835580_3377258052532133_4186880548703356922_n.jpg" alt="CEO">
+      <img src="{{ asset('frontend/img/341835580_3377258052532133_4186880548703356922_n.jpg') }}" alt="CEO">
     </a>
     <div class="header-right">
-      <a href="Dashboard.html">Dashboard</a>
+      <a href="{{ route('dashboard') }}">Dashboard</a>
       <a class="active" href="#projects">Projects</a>
     </div>
   </div>
@@ -99,6 +99,6 @@
         }
     });
   </script>
-  <script src="/Capstone Backup 12-31/Capstone/Capstone/public/assets/javascript/projectTemplate_script.js"></script>
+  <script src="{{ asset('frontend/javascript/projectTemplate_script.js') }}"></script>
 </body>
 </html>
