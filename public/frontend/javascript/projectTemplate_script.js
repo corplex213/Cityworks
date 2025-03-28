@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const menu = document.createElement('div');
         menu.className = 'dropdown-menu';
         menu.style.display = 'none';
-        menu.style.position = 'absolute'; // Ensure the menu is positioned absolutely
+        menu.style.position = 'absolute';
     
         options.forEach(option => {
             if (typeof option === 'string') {
