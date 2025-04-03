@@ -11,13 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('projects', function (Blueprint $table) {
-            $table->id();
-            $table->string('proj_name');
-            $table->text('location');
-            $table->text('description');
+        Schema::table('projects', function (Blueprint $table) {
             $table->boolean('archived')->default(false);
-            $table->timestamps();
         });
     }
 
@@ -26,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('projects');
+        Schema::table('projects', function (Blueprint $table) {
+            $table->dropColumn('archived');
+        }); 
     }
 };

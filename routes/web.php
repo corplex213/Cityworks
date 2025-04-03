@@ -25,7 +25,8 @@ Route::delete('/projects/{id}', [ProjectController::class, 'destroy'])->name('pr
 
 //Route for Archive Projects yet to be implemented
 Route::get('/archiveProjects', [ArchiveProjectController::class, 'index'])->middleware(['auth'])->name('archiveProjects');
-
+Route::put('/projects/{id}/archive', [ArchiveProjectController::class, 'archive'])->middleware(['auth'])->name('projects.archive');
+Route::put('/projects/{id}/restore', [ArchiveProjectController::class, 'restore'])->middleware(['auth'])->name('projects.restore');
 //Route for profile
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

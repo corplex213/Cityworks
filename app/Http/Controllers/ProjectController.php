@@ -10,10 +10,15 @@ class ProjectController extends Controller
     // Show all projects
     public function index()
     {
-        $projects = Project::all();
+        $projects = Project::where('archived', false)->get();
         return view('projects', compact('projects'));
     }
-
+    public function show($id)
+    {
+        $project = Project::findOrFail($id); // Retrieve the project by ID
+        return view('projectTemplate', compact('project')); // Pass project data to the view
+    }
+    
     // Store new project
     public function store(Request $request)
     {
@@ -54,15 +59,6 @@ class ProjectController extends Controller
     
         return redirect()->route('projects')->with('success', 'Project updated successfully.');
     }
-    // Archive Project
-    public function archive($id)
-    {
-        $project = Project::findOrFail($id);
-        $project->update(['archived' => true]);
-
-        return redirect()->route('projects')->with('success', 'Project archived successfully.');
-    }
-
     // Delete Project
     public function destroy($id)
     {
@@ -70,5 +66,10 @@ class ProjectController extends Controller
         $project->delete();
 
         return redirect()->route('projects')->with('success', 'Project deleted successfully.');
+    }
+    public function showContent($id)
+    {
+    $project = Project::findOrFail($id);
+    return view('project.template', compact('project'));
     }
 }

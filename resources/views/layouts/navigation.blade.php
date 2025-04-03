@@ -23,8 +23,7 @@
 
                 <x-nav-link :href="route('archiveProjects')" :active="request()->routeIs('archiveProjects')">
                     {{ __('Archive') }}
-                </x-nav-link>
-                              
+                </x-nav-link>                
                 
             </div>
 
