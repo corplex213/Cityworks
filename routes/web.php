@@ -1,44 +1,37 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\DashboardController;
-//use App\Http\Controllers\LoginController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ArchiveProjectController;
 use Illuminate\Support\Facades\Route;
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+//Route for landing page
+Route::get('/', function () {
+    return view('welcome');
+});
+//Route after logging in
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
-// Route::get('/dashboard', function () {
-    
-//     /* I can't see this old dashboard thingy
-//     return view('custom.old_dashboard');*/
+//Route for Projects
+Route::get('/projects', [ProjectController::class, 'index'])->middleware(['auth'])->name('projects');
+Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
+Route::get('/projects/{id}', [ProjectController::class, 'show'])->name('projects.show');
+Route::get('/projects/{id}/edit', [ProjectController::class, 'edit'])->name('projects.edit');
+Route::put('/projects/{id}', [ProjectController::class, 'update'])->name('projects.update');
+Route::put('/projects/{id}/archive', [ProjectController::class, 'archive'])->name('projects.archive');
+Route::delete('/projects/{id}', [ProjectController::class, 'destroy'])->name('projects.destroy');
 
-//     /*so let's try this */
-//     return view('dashboard');
+//Route for Archive Projects yet to be implemented
+Route::get('/archiveProjects', [ArchiveProjectController::class, 'index'])->middleware(['auth'])->name('archiveProjects');
 
-// }) -> name('dashboard');
-// //->middleware(['auth', 'verified'])->name('dashboard');
+//Route for profile
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
 
-/*this is for authentication */
-// Route::middleware('auth')->group(function () {
-//     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-//     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-//     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-// });
-
-/*but, for testing, i'll try to display the dashboard */
-Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-
-//Route::get('/', [LoginController::class, 'LoginPage'])->name('login'); for loginPage sana
-
-// require __DIR__.'/auth.php';
-
-// Route for Projects
-Route::get('/project/{name}/{description}', function ($name, $description) {
-    return view('project', [
-        'name' => urldecode($name),
-        'description' => urldecode($description)
-    ]);
-})->name('project.view');
+require __DIR__.'/auth.php';
