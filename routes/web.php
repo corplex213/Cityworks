@@ -22,6 +22,7 @@ Route::get('/projects/{id}/edit', [ProjectController::class, 'edit'])->name('pro
 Route::put('/projects/{id}', [ProjectController::class, 'update'])->name('projects.update');
 Route::put('/projects/{id}/archive', [ProjectController::class, 'archive'])->name('projects.archive');
 Route::delete('/projects/{id}', [ProjectController::class, 'destroy'])->name('projects.destroy');
+Route::get('/projects/{id}/content', [ProjectController::class, 'showContent'])->name('projects.content');
 
 //Route for Archive Projects yet to be implemented
 Route::get('/archiveProjects', [ArchiveProjectController::class, 'index'])->middleware(['auth'])->name('archiveProjects');
