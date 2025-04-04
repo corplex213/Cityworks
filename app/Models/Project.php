@@ -12,4 +12,9 @@ class Project extends Model
         'location',
         'description',
     ];
+
+    public function details()
+    {
+        return $this->hasOne(Detail::class);
+    }
 }

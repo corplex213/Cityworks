@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ArchiveProjectController;
+use App\Http\Controllers\DetailController;
 use Illuminate\Support\Facades\Route;
 
 //Route for landing page
@@ -34,6 +35,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+
+//Route for project details
+Route::post('/project-details/store', [DetailController::class, 'store'])->name('project-details.store');
 
 
 require __DIR__.'/auth.php';
