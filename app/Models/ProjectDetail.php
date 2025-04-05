@@ -4,8 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Detail extends Model
+class ProjectDetail extends Model
 {
+    protected $table = 'project_details';
+
     protected $fillable = [
         'text',
         'key_persons',
@@ -13,12 +15,7 @@ class Detail extends Model
         'start_date',
         'due_date',
         'comments',
-        'budget',
         'file_upload',
+        'budget',
     ];
-
-    public function project()
-    {
-        return $this->belongsTo(Project::class);
-    }
 }

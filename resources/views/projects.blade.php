@@ -75,140 +75,8 @@
         </div>
     </div>
 
-    <!-- Project Overview Section -->
-<div id="projectOverviewSection" class="hidden bg-white p-6 rounded-lg shadow-lg">
-    <section class="project-overview">
-        <!-- Project Header -->
-        <div class="project-header border-b border-gray-200 pb-4 mb-6">
-            <h1 id="projectName" class="text-2xl font-bold text-green-600 editable" contenteditable="true">Project Name</h1>
-            <p id="projectDescription" class="text-gray-700 mt-2 editable" contenteditable="true">
-                Project description goes here. This is a brief overview of the project objectives and goals.
-            </p>
-        </div>
+    @include('projectTable')
 
-        <!-- Task Table Wrapper -->
-        <div class="task-table-wrapper">
-            <div class="button-table-wrapper flex justify-start space-x-4">
-                <!-- Buttons -->
-                <button id="mainTableBtn" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded shadow" onclick="showMainTable()">
-                    Main Table
-                </button>
-                <button id="calendarBtn" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded shadow" onclick="showCalendar()">
-                    Calendar
-                </button>
-            </div>
-        </div>
-    </section>
-
-    <!-- Main Table Section -->
-    <section id="mainTableSection" class="group-section mt-8">
-        <div class="group-container bg-white p-4 rounded-lg shadow">
-            <!-- Editable Header for the Table -->
-            <div class="table-header mb-4">
-                <h2 id="tableHeader" class="text-xl font-semibold text-green-600 editable text-center" contenteditable="true">
-                    Name of Engineer/Project Manager
-                </h2>
-            </div>
-        </div>
-        <!-- Table for Project Template -->
-        <div class="relative">
-            <table id="dynamicTable" class="table-auto w-full border-collapse border border-gray-300 mx-auto">
-                <thead class="bg-green-500 text-white">
-                    <tr id="tableHeaderRow">
-                        <th class="border border-gray-300 px-4 py-2 text-left resizable" contenteditable="true">Text</th>
-                        <th class="border border-gray-300 px-4 py-2 text-left resizable" contenteditable="true">Key Persons</th>
-                        <th class="border border-gray-300 px-4 py-2 text-left resizable" contenteditable="true">Status</th>
-                        <th class="border border-gray-300 px-4 py-2 text-left resizable" contenteditable="true">Start Date</th>
-                        <th class="border border-gray-300 px-4 py-2 text-left resizable" contenteditable="true">Due Date</th>
-                        <th class="border border-gray-300 px-4 py-2 text-left resizable" contenteditable="true">Comments</th>
-                        <th class="border border-gray-300 px-4 py-2 text-left resizable" contenteditable="true">Budget</th>
-                        <th class="border border-gray-300 px-4 py-2 text-left resizable" contenteditable="true">File Upload</th>
-                        <!-- Add Column Dropdown -->
-                        <th class="border border-gray-300 px-4 py-2 text-center relative">
-                            <button id="addColumnDropdownBtn" class=" text-white px-2 py-1 rounded" onclick="toggleDropdownAddField()">+</button>
-                            <div id="addColumnDropdown" class="hidden absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg z-10">
-                                <button onclick="addColumn('Text')" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200">Text</button>
-                                <button onclick="addColumn('Key Persons')" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200">Key Persons</button>
-                                <button onclick="addColumn('Status')" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200">Status</button>
-                                <button onclick="addColumn('Start Date')" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200">Start Date</button>
-                                <button onclick="addColumn('Due Date')" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200">Due Date</button>
-                                <button onclick="addColumn('Comments')" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200">Comments</button>
-                                <button onclick="addColumn('Budget')" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200">Budget</button>
-                                <button onclick="addColumn('File Upload')" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200">File Upload</button>
-                            </div>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for ($i = 0; $i < 3; $i++)
-                    <tr>
-                        <td class="border border-gray-300 px-4 py-2" contenteditable="true" data-placeholder="Enter text"></td>
-                        <td class="border border-gray-300 px-4 py-2" contenteditable="true" data-placeholder="Enter key persons"></td>
-                        <td class="border border-gray-300 px-4 py-2">
-                            <select name="status[]" class="w-full border border-gray-300 p-2 rounded">
-                                <option value="">Select status</option>
-                                <option value="Pending">Pending</option>
-                                <option value="In Progress">In Progress</option>
-                                <option value="Completed">Completed</option>
-                                <option value="Behind Schedule">Behind Schedule</option>
-                                <option value="On Schedule">On Schedule</option>
-                                <option value="Suspended">Suspended</option>
-                                <option value="Terminated">Terminated</option>
-                                <option value="Ahead of Schedule">Ahead of Schedule</option>
-                            </select>
-                        </td>
-                        <td class="border border-gray-300 px-4 py-2">
-                            <input type="date" name="start_date[]" class="w-full border border-gray-300 p-2 rounded">
-                        </td>
-                        <td class="border border-gray-300 px-4 py-2">
-                            <input type="date" name="due_date[]" class="w-full border border-gray-300 p-2 rounded">
-                        </td>
-                        <td class="border border-gray-300 px-4 py-2" contenteditable="true" data-placeholder="Enter comments"></td>
-                        <td class="border border-gray-300 px-4 py-2" contenteditable="true" data-placeholder="Enter budget"></td>
-                        <td class="border border-gray-300 px-4 py-2">
-                            <input type="file" name="file_upload[]" class="w-full border border-gray-300 p-2 rounded">
-                        </td>
-                    </tr>
-                    @endfor
-                </tbody>
-            </table>
-            <!-- Add Item Button -->
-            <div class="mt-4 flex justify-center">
-                <button id="addItemBtn" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded shadow">
-                    Add Item
-                </button>
-            </div>
-        </div>
-        <!-- Add Group Button -->
-        <div class="add-group-container mt-4">
-            <button id="addGroupBtn" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded shadow">
-                Add Engineer/Project Manager
-            </button>
-        </div>
-    </section>
-
-    <!-- Calendar Section -->
-    <section id="calendarSection" class="calendar-section mt-8 hidden">
-        <div class="calendar-header flex items-center justify-between bg-gray-100 p-4 rounded-lg shadow">
-            <button id="prevMonth" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded shadow">
-                Prev
-            </button>
-            <span id="monthYearDisplay" class="text-gray-700 font-semibold">Month Year</span>
-            <button id="nextMonth" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded shadow">
-                Next
-            </button>
-        </div>
-        <div class="calendar-grid mt-4 bg-gray-50 p-4 rounded-lg shadow">
-            <!-- Placeholder for calendar grid -->
-            <p class="text-gray-500">Calendar content will appear here.</p>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer mt-8 border-t border-gray-200 pt-4">
-        <p class="text-center text-gray-500">&copy; 2024 City Engineering Office. All rights reserved.</p>
-    </footer>
-</div>
 
     <!-- Add Project Modal -->
     <div id="addProjectModal" class="fixed inset-0 hidden bg-gray-900 bg-opacity-50 flex justify-center items-center">
@@ -267,84 +135,6 @@
 
     <!-- JavaScript for Modal and Section Toggle -->
     <script>
-        document.getElementById('addItemBtn').addEventListener('click', function () {
-        const tableBody = document.querySelector('#dynamicTable tbody');
-        const tableHeaderRow = document.querySelector('#tableHeaderRow');
-        const newRow = document.createElement('tr');
-
-        Array.from(tableHeaderRow.children).forEach((headerCell, index) => {
-        if (index === tableHeaderRow.children.length - 1) return; // Skip the last column if it's for actions
-        const newCell = document.createElement('td');
-        newCell.className = 'border border-gray-300 px-4 py-2';
-
-        const columnName = headerCell.textContent.trim();
-        if (columnName === 'Start Date' || columnName === 'Due Date') {
-            // Add a date input for date fields
-            newCell.innerHTML = `<input type="date" name="${columnName.toLowerCase().replace(' ', '_')}[]" class="w-full border border-gray-300 p-2 rounded">`;
-        } else if (columnName === 'File Upload') {
-            // Add a file input for file upload fields
-            newCell.innerHTML = `<input type="file" name="${columnName.toLowerCase().replace(' ', '_')}[]" class="w-full border border-gray-300 p-2 rounded">`;
-        } else if (columnName === 'Status') {
-            // Add a dropdown for status
-            newCell.innerHTML = `<select name="${columnName.toLowerCase().replace(' ', '_')}[]" class="w-full border border-gray-300 p-2 rounded">
-                                    <option value="">Select status</option>
-                                    <option value="Pending">Pending</option>
-                                    <option value="In Progress">In Progress</option>
-                                    <option value="Completed">Completed</option>
-                                    <option value="Behind Schedule">Behind Schedule</option>
-                                    <option value="On Schedule">On Schedule</option>
-                                    <option value="Suspended">Suspended</option>
-                                    <option value="Terminated">Terminated</option>
-                                    <option value="Ahead of Schedule">Ahead of Schedule</option>
-                                </select>`;
-        } else {
-            // Make other cells editable with placeholder
-            newCell.setAttribute('contenteditable', 'true');
-            newCell.setAttribute('data-placeholder', `Enter ${columnName.toLowerCase()}`);
-        }
-
-        newRow.appendChild(newCell);
-        });
-
-        tableBody.appendChild(newRow);
-        });
-
-        // Helper function to generate input fields based on column type
-        function generateInputField(columnName) {
-            const inputTypes = {
-                'Text': 'text',
-                'Key Persons': 'text',
-                'Start Date': 'date',
-                'Due Date': 'date',
-                'Budget': 'number',
-                'File Upload': 'file',
-            };
-
-            if (inputTypes[columnName]) {
-                return `<input type="${inputTypes[columnName]}" name="${columnName.toLowerCase().replace(' ', '_')}[]" class="w-full border border-gray-300 p-2 rounded" placeholder="Enter ${columnName}">`;
-            }
-
-            if (columnName === 'Status') {
-                return `<select name="${columnName.toLowerCase().replace(' ', '_')}[]" class="w-full border border-gray-300 p-2 rounded">
-                            <option value="">Select status</option>
-                            <option value="Pending">Pending</option>
-                            <option value="In Progress">In Progress</option>
-                            <option value="Completed">Completed</option>
-                            <option value="Behind Schedule">Behind Schedule</option>
-                            <option value="On Schedule">On Schedule</option>
-                            <option value="Suspended">Suspended</option>
-                            <option value="Terminated">Terminated</option>
-                            <option value="Ahead of Schedule">Ahead of Schedule</option>
-                        </select>`;
-            }
-
-            if (columnName === 'Comments') {
-                return `<textarea name="${columnName.toLowerCase().replace(' ', '_')}[]" class="w-full border border-gray-300 p-2 rounded" placeholder="Enter ${columnName}"></textarea>`;
-            }
-
-            // Default to a text input for any new columns
-            return `<input type="text" name="${columnName.toLowerCase().replace(' ', '_')}[]" class="w-full border border-gray-300 p-2 rounded" placeholder="Enter ${columnName}">`;
-        }
 
         function toggleModal(modalId, isVisible) {
         const modal = document.getElementById(modalId);
@@ -373,10 +163,6 @@
             toggleModal('editProjectModal', false);
         }
 
-        function toggleDropdown(projectId) {
-            document.getElementById('dropdown-' + projectId).classList.toggle('hidden');
-        }
-
         function openProject(name, description) {
             // Hide project selection section
             document.getElementById('projectSelectionSection').classList.add('hidden');
@@ -400,50 +186,5 @@
             // Hide the main table section
             document.getElementById('mainTableSection').classList.add('hidden');
         }
-        
-        function toggleDropdownAddField() {
-        const dropdown = document.getElementById('addColumnDropdown');
-        dropdown.classList.toggle('hidden');
-        }
-        function addColumn(columnName) {
-        const tableHeaderRow = document.getElementById('tableHeaderRow');
-        const tableBodyRows = document.querySelectorAll('#dynamicTable tbody tr');
-
-        // Add the new column to the header row
-        const newHeaderCell = document.createElement('th');
-        newHeaderCell.className = 'border border-gray-300 px-4 py-2 text-left';
-        newHeaderCell.textContent = columnName;
-        tableHeaderRow.insertBefore(newHeaderCell, tableHeaderRow.lastElementChild);
-
-    // Add the new column to each row in the table body
-        tableBodyRows.forEach(row => {
-        const newCell = document.createElement('td');
-        newCell.className = 'border border-gray-300 px-4 py-2';
-
-        if (columnName === 'Start Date' || columnName === 'Due Date') {
-            newCell.innerHTML = `<input type="date" name="${columnName.toLowerCase().replace(' ', '_')}[]" class="w-full border border-gray-300 p-2 rounded">`;
-        } else if (columnName === 'File Upload') {
-            newCell.innerHTML = `<input type="file" name="${columnName.toLowerCase().replace(' ', '_')}[]" class="w-full border border-gray-300 p-2 rounded">`;
-        } else if (columnName === 'Status') {
-            newCell.innerHTML = `<select name="${columnName.toLowerCase().replace(' ', '_')}[]" class="w-full border border-gray-300 p-2 rounded">
-                                    <option value="">Select status</option>
-                                    <option value="Pending">Pending</option>
-                                    <option value="In Progress">In Progress</option>
-                                    <option value="Completed">Completed</option>
-                                    <option value="Behind Schedule">Behind Schedule</option>
-                                    <option value="On Schedule">On Schedule</option>
-                                    <option value="Suspended">Suspended</option>
-                                    <option value="Terminated">Terminated</option>
-                                    <option value="Ahead of Schedule">Ahead of Schedule</option>
-                                </select>`;
-        } else {
-            newCell.setAttribute('contenteditable', 'true');
-            newCell.setAttribute('data-placeholder', `Enter ${columnName.toLowerCase()}`);
-        }
-
-        row.appendChild(newCell);
-    });
-        toggleDropdownAddField(); // Hide the dropdown after adding the column
-    }
     </script>
 </x-app-layout>

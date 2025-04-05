@@ -6,7 +6,7 @@
   <title>Project Details</title>
 </head>
 <body>
-  <!-- Project Overview Section -->
+  <!-- Project Overview Section WALA NA TO-->
 <div id="projectOverviewSection" class="bg-white p-6 rounded-lg shadow-lg">
   <section class="project-overview">
       <!-- Project Header -->
