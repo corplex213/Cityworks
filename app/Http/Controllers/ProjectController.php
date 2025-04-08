@@ -8,15 +8,24 @@ use Illuminate\Http\Request;
 class ProjectController extends Controller
 {
     // Show all projects
-    public function index()
+    public function listProjects(Request $request)
     {
-        $projects = Project::where('archived', false)->get();
+        $query = Project::where('archived', false);
+
+        // Check if a search query is provided
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('proj_name', 'like', '%' . $search . '%')
+                ->orWhere('location', 'like', '%' . $search . '%')
+                ->orWhere('description', 'like', '%' . $search . '%');
+            });
+        }
+
+        // Paginate the results
+        $projects = $query->paginate(10);
+
         return view('projects', compact('projects'));
-    }
-    public function show($id)
-    {
-        $project = Project::findOrFail($id); // Retrieve the project by ID
-        return view('projectTemplate', compact('project')); // Pass project data to the view
     }
     
     // Store new project
@@ -24,11 +33,15 @@ class ProjectController extends Controller
     {
         $request->validate([
             'proj_name' => 'required|string|max:255',
-            'location' => 'required|string',
+            'location' => 'required|string|max:255',
             'description' => 'required|string',
         ]);
 
-        Project::create($request->all());
+        // Add the default status
+        $data = $request->all();
+        $data['status'] = 'In Progress';
+
+        Project::create($data);
 
         return redirect()->route('projects')->with('success', 'Project created successfully.');
     }
@@ -44,19 +57,20 @@ class ProjectController extends Controller
     public function update(Request $request, $id)
     {
         $project = Project::findOrFail($id);
-    
+
         $request->validate([
             'proj_name' => 'required|string|max:255',
             'location' => 'required|string|max:255',
             'description' => 'required|string',
         ]);
-    
+
         $project->update([
             'proj_name' => $request->proj_name,
             'location' => $request->location,
             'description' => $request->description,
+            'status' => $project->status,
         ]);
-    
+
         return redirect()->route('projects')->with('success', 'Project updated successfully.');
     }
     // Delete Project
@@ -67,9 +81,19 @@ class ProjectController extends Controller
 
         return redirect()->route('projects')->with('success', 'Project deleted successfully.');
     }
-    public function showContent($id)
+    public function updateStatus(Request $request, $id)
     {
-    $project = Project::findOrFail($id);
-    return view('project.template', compact('project'));
+        $project = Project::findOrFail($id);
+
+        $request->validate([
+            'status' => 'required|string|in:In Progress,Completed,Delayed', // Validate status
+        ]);
+
+        $project->update([
+            'status' => $request->status,
+        ]);
+
+        return redirect()->route('projects')->with('success', 'Project status updated successfully.');
     }
+    
 }

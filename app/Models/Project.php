@@ -11,6 +11,7 @@ class Project extends Model
         'proj_name',
         'location',
         'description',
+        'status',
     ];
 
     public function details()

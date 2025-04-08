@@ -25,15 +25,21 @@
 
     <!-- Main Table Section -->
     <section id="mainTableSection" class="group-section mt-8">
-        <div class="relative" id="dynamicTablesContainer">
-            <!-- Dynamic tables will be appended here -->
-        </div>
-        <!-- Add Group Button -->
-        <div class="add-group-container mt-4">
-            <button id="addGroupBtn" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded shadow">
-                Add Engineer/Project Manager
-            </button>
-        </div>
+        <form action="{{ route('projectDetails.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <div class="relative" id="dynamicTablesContainer">
+                <!-- Dynamic tables will be appended here -->
+            </div>
+            <!-- Add Group Button -->
+            <div class="add-group-container mt-4">
+                <button id="addGroupBtn" type="button" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded shadow">
+                    Assign Task to Engineer
+                </button>
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Save Details
+                </button>
+            </div>
+        </form>
     </section>
 
     <!-- Calendar Section -->
@@ -57,7 +63,7 @@
     <footer class="footer mt-8 border-t border-gray-200 pt-4">
         <p class="text-center text-gray-500">&copy; 2024 City Engineering Office. All rights reserved.</p>
     </footer>
-
+</div>
 
     <script>
         // Function to create a table
@@ -78,17 +84,21 @@
             const headerRow = document.createElement('tr');
             headerRow.classList.add('bg-gray-200');
             headerRow.innerHTML = `
-                <th class="border border-gray-300 px-4 py-2">Text</th>
-                <th class="border border-gray-300 px-4 py-2">Timeline</th>
+                <th class="border border-gray-300 px-4 py-2" contenteditable="true" data-type="text">Text</th>
+                <th class="border border-gray-300 px-4 py-2" contenteditable="true" data-type="timeline">Timeline</th>
+                <th class="border border-gray-300 px-4 py-2" contenteditable="true" data-type="key-persons">Key Persons</th>
+                <th class="border border-gray-300 px-4 py-2" contenteditable="true" data-type="status">Status</th>
+                <th class="border border-gray-300 px-4 py-2" contenteditable="true" data-type="file-upload">File Upload</th>
+                <th class="border border-gray-300 px-4 py-2" contenteditable="true" data-type="budget">Budget</th>
                 <th class="border border-gray-300 px-2 py-2 w-12"> <!-- Shortened "+" column -->
                     <div class="relative">
-                        <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-1 px-2 rounded shadow dropdown-toggle">
+                        <button type="button" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-1 px-2 rounded shadow dropdown-toggle">
                             +
                         </button>
                         <div class="dropdown-menu hidden absolute bg-white border border-gray-300 rounded shadow mt-1">
                             <button class="dropdown-item px-4 py-2 hover:bg-gray-100" data-field="Key Persons">Key Persons</button>
                             <button class="dropdown-item px-4 py-2 hover:bg-gray-100" data-field="Status">Status</button>
-                            <button class="dropdown-item px-4 py-2 hover:bg-gray-100" data-field="Comments">Comments</button>
+                            <button class="dropdown-item px-4 py-2 hover:bg-gray-100" data-field="Text">Text</button>
                             <button class="dropdown-item px-4 py-2 hover:bg-gray-100" data-field="File Upload">File Upload</button>
                             <button class="dropdown-item px-4 py-2 hover:bg-gray-100" data-field="Budget">Budget</button>
                             <button class="dropdown-item px-4 py-2 hover:bg-gray-100" data-field="Timeline">Timeline</button>
@@ -104,73 +114,66 @@
     
             // Function to create a new row
             const createRow = () => {
-                const row = document.createElement('tr');
-                Array.from(headerRow.children).forEach((header, index) => {
-                    if (index === headerRow.children.length - 1) return; // Skip the "+" button column
-                    const newCell = document.createElement('td');
-                    newCell.classList.add('border', 'border-gray-300', 'px-4', 'py-2');
-    
-                    // Add specific behavior based on the header text
-                    if (header.textContent === "Text" || header.textContent === "Key Persons" || header.textContent === "Comments") {
-                        newCell.setAttribute('contenteditable', 'true');
-                    } else if (header.textContent === "Timeline") {
-                        const startDateInput = document.createElement('input');
-                        startDateInput.type = 'date';
-                        startDateInput.classList.add('w-full', 'border', 'border-gray-300', 'rounded', 'px-2', 'py-1');
-    
-                        const dueDateInput = document.createElement('input');
-                        dueDateInput.type = 'date';
-                        dueDateInput.classList.add('w-full', 'border', 'border-gray-300', 'rounded', 'px-2', 'py-1', 'mt-2');
-    
-                        // Event listener to summarize dates
-                        const summarizeDates = () => {
-                            if (startDateInput.value && dueDateInput.value) {
-                                const startDate = new Date(startDateInput.value);
-                                const dueDate = new Date(dueDateInput.value);
-    
-                                const options = { year: 'numeric', month: 'long', day: 'numeric' };
-                                newCell.innerHTML = `
-                                    <span class="timeline-summary">${startDate.toLocaleDateString(undefined, options)} - ${dueDate.toLocaleDateString(undefined, options)}</span>
-                                `;
-    
-                                // Add click event to make the date pickers available again
-                                const summarySpan = newCell.querySelector('.timeline-summary');
-                                summarySpan.addEventListener('click', () => {
-                                    newCell.innerHTML = '';
-                                    newCell.appendChild(startDateInput);
-                                    newCell.appendChild(dueDateInput);
-                                });
-                            }
-                        };
-    
-                        startDateInput.addEventListener('change', summarizeDates);
-                        dueDateInput.addEventListener('change', summarizeDates);
-    
-                        newCell.appendChild(startDateInput);
-                        newCell.appendChild(dueDateInput);
-                    } else if (header.textContent === "Status") {
-                        newCell.innerHTML = `
-                            <select class="w-full border border-gray-300 rounded px-2 py-1">
-                                <option value="Pending">Pending</option>
-                                <option value="In Progress">In Progress</option>
-                                <option value="Completed">Completed</option>
-                            </select>
-                        `;
-                    } else if (header.textContent === "File Upload") {
-                        newCell.innerHTML = `<input type="file" class="w-full border border-gray-300 rounded">`;
-                    } else if (header.textContent === "Budget") {
-                        newCell.setAttribute('contenteditable', 'true');
-                        newCell.addEventListener('input', function () {
-                            this.textContent = this.textContent.replace(/[^0-9]/g, ''); // Allow only integers
-                        });
-                    } else {
-                        newCell.setAttribute('contenteditable', 'true');
-                    }
-    
-                    row.appendChild(newCell);
-                });
-                return row;
-            };
+            const row = document.createElement('tr');
+            Array.from(headerRow.children).forEach((header, index) => {
+                if (index === headerRow.children.length - 1) return; // Skip the "+" button column
+                const newCell = document.createElement('td');
+                newCell.classList.add('border', 'border-gray-300', 'px-4', 'py-2');
+
+                // Use the data-type attribute to determine behavior
+                const fieldType = header.getAttribute('data-type');
+                if (fieldType === "text" || fieldType === "key-persons") {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.name = `details[][${fieldType}]`; // Use array notation for multiple rows
+                    input.classList.add('w-full', 'border', 'border-gray-300', 'rounded', 'px-2', 'py-1');
+                    newCell.appendChild(input);
+                } else if (fieldType === "timeline") {
+                    const startDateInput = document.createElement('input');
+                    startDateInput.type = 'date';
+                    startDateInput.name = `details[][timeline][start_date]`;
+                    startDateInput.classList.add('w-full', 'border', 'border-gray-300', 'rounded', 'px-2', 'py-1');
+
+                    const dueDateInput = document.createElement('input');
+                    dueDateInput.type = 'date';
+                    dueDateInput.name = `details[][timeline][due_date]`;
+                    dueDateInput.classList.add('w-full', 'border', 'border-gray-300', 'rounded', 'px-2', 'py-1', 'mt-2');
+
+                    newCell.appendChild(startDateInput);
+                    newCell.appendChild(dueDateInput);
+                } else if (fieldType === "status") {
+                    const select = document.createElement('select');
+                    select.name = `details[][status]`;
+                    select.classList.add('w-full', 'border', 'border-gray-300', 'rounded', 'px-2', 'py-1');
+                    select.innerHTML = `
+                        <option value="Pending">Pending</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Behind Schedule">Behind Schedule</option>
+                        <option value="On Schedule">On Schedule</option>
+                        <option value="Suspended">Suspended</option>
+                        <option value="Terminated">Terminated</option>
+                        <option value="Ahead of Schedule">Ahead of Schedule</option>
+                    `;
+                    newCell.appendChild(select);
+                } else if (fieldType === "file-upload") {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.name = `details[][file_upload]`;
+                    input.classList.add('w-full', 'border', 'border-gray-300', 'rounded');
+                    newCell.appendChild(input);
+                } else if (fieldType === "budget") {
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.name = `details[][budget]`;
+                    input.classList.add('w-full', 'border', 'border-gray-300', 'rounded', 'px-2', 'py-1');
+                    newCell.appendChild(input);
+                }
+
+                row.appendChild(newCell);
+            });
+            return row;
+        };
     
             // Add initial rows
             tbody.appendChild(createRow());
@@ -198,6 +201,7 @@
             const dropdownMenu = table.querySelector('.dropdown-menu');
     
             dropdownToggle.addEventListener('click', function () {
+                event.stopPropagation();
                 dropdownMenu.classList.toggle('hidden');
             });
     
@@ -207,6 +211,8 @@
     
                 const newHeader = document.createElement('th');
                 newHeader.classList.add('border', 'border-gray-300', 'px-4', 'py-2');
+                newHeader.setAttribute('contenteditable', 'true');
+                newHeader.setAttribute('data-type', fieldType.toLowerCase().replace(' ', '-')); // Add data-type attribute
                 newHeader.textContent = fieldType;
                 headerRow.insertBefore(newHeader, headerRow.lastElementChild);
     
@@ -215,8 +221,7 @@
                     const newCell = document.createElement('td');
                     newCell.classList.add('border', 'border-gray-300', 'px-4', 'py-2');
     
-                    // Add specific behavior based on the field type
-                    if (fieldType === "Key Persons" || fieldType === "Comments") {
+                    if (fieldType === "Key Persons" || fieldType === "Text") {
                         newCell.setAttribute('contenteditable', 'true');
                     } else if (fieldType === "Timeline") {
                         const startDateInput = document.createElement('input');
@@ -227,30 +232,6 @@
                         dueDateInput.type = 'date';
                         dueDateInput.classList.add('w-full', 'border', 'border-gray-300', 'rounded', 'px-2', 'py-1', 'mt-2');
     
-                        // Event listener to summarize dates
-                        const summarizeDates = () => {
-                            if (startDateInput.value && dueDateInput.value) {
-                                const startDate = new Date(startDateInput.value);
-                                const dueDate = new Date(dueDateInput.value);
-    
-                                const options = { year: 'numeric', month: 'long', day: 'numeric' };
-                                newCell.innerHTML = `
-                                    <span class="timeline-summary">${startDate.toLocaleDateString(undefined, options)} - ${dueDate.toLocaleDateString(undefined, options)}</span>
-                                `;
-    
-                                // Add click event to make the date pickers available again
-                                const summarySpan = newCell.querySelector('.timeline-summary');
-                                summarySpan.addEventListener('click', () => {
-                                    newCell.innerHTML = '';
-                                    newCell.appendChild(startDateInput);
-                                    newCell.appendChild(dueDateInput);
-                                });
-                            }
-                        };
-    
-                        startDateInput.addEventListener('change', summarizeDates);
-                        dueDateInput.addEventListener('change', summarizeDates);
-    
                         newCell.appendChild(startDateInput);
                         newCell.appendChild(dueDateInput);
                     } else if (fieldType === "Status") {
@@ -259,6 +240,11 @@
                                 <option value="Pending">Pending</option>
                                 <option value="In Progress">In Progress</option>
                                 <option value="Completed">Completed</option>
+                                <option value="Behind Schedule">Behind Schedule</option>
+                                <option value="On Schedule">On Schedule</option>
+                                <option value="Suspended">Suspended</option>
+                                <option value="Terminated">Terminated</option>
+                                <option value="Ahead of Schedule">Ahead of Schedule</option>
                             </select>
                         `;
                     } else if (fieldType === "File Upload") {
@@ -268,8 +254,6 @@
                         newCell.addEventListener('input', function () {
                             this.textContent = this.textContent.replace(/[^0-9]/g, ''); // Allow only integers
                         });
-                    } else {
-                        newCell.setAttribute('contenteditable', 'true');
                     }
     
                     row.appendChild(newCell);
