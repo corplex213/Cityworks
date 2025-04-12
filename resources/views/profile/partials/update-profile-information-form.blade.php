@@ -47,6 +47,12 @@
             @endif
         </div>
 
+        <div>
+            <x-input-label for="position" :value="__('Position')" />
+            <x-text-input id="position" name="position" type="text" class="mt-1 block w-full bg-gray-100 dark:bg-gray-800" :value="old('position', $user->position)" readonly disabled />
+            <x-input-error class="mt-2" :messages="$errors->get('position')" />
+        </div>
+
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 

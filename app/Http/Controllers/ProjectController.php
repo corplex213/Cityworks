@@ -3,10 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
+    public function show($id)
+    {
+        $project = Project::findOrFail($id);
+        $users = User::all();
+        return view('project-management', compact('project', 'users'));
+    }
+    
     // Show all projects
     public function listProjects(Request $request)
     {
@@ -22,10 +30,15 @@ class ProjectController extends Controller
             });
         }
 
+        // Handle sorting
+        $sortField = $request->get('sort', 'created_at'); // Default sort field
+        $sortDirection = $request->get('direction', 'asc'); // Default sort direction
+        $query->orderBy($sortField, $sortDirection);
+
         // Paginate the results
         $projects = $query->paginate(10);
 
-        return view('projects', compact('projects'));
+        return view('projects', compact('projects', 'sortField', 'sortDirection'));
     }
     
     // Store new project

@@ -16,6 +16,33 @@
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
+        <!-- Position -->
+        <div class="mt-4" data-dropdown-postion=>
+            <x-input-label for="position" :value="__('Position')" />
+            
+            <select id="position" name="position" data-dropdown-postion="bottom" class="custom-select block mt-1 w-full bg-gray-800 text-white border-gray-700 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
+                <option value="" disabled selected>{{ __('Select a position') }}</option>
+            
+                <optgroup label="Administrative Positions">
+                    <option value="City Engineer">{{ __('City Engineer') }}</option>
+                    <option value="Assistant City Engineer">{{ __('Assistant City Engineer') }}</option>
+                    <option value="Supervising Administrative Officer">{{ __('Supervising Administrative Officer') }}</option>
+                    <option value="Division Head">{{ __('Division Head') }}</option>
+                    <option value="Section Head">{{ __('Section Head') }}</option>
+                </optgroup>
+            
+                <optgroup label="Managerial Position">
+                    <option value="Area Leaders">{{ __('Area Leaders') }}</option>
+                </optgroup>
+
+                <optgroup label="Operational Position">
+                    <option value="Technical Personnel">{{ __('Technical Personnel') }}</option>
+                </optgroup>
+            </select>
+            
+            <x-input-error :messages="$errors->get('position')" class="mt-2" />
+        </div>
+
         <!-- Password -->
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />
@@ -51,3 +78,48 @@
     
     </form>
 </x-guest-layout>
+
+
+<style>
+  /* Custom styling for dropdown */
+  .custom-select {
+    appearance: none;
+    transition: all 0.3s ease;
+    scroll-behavior: smooth;
+  }
+  
+  /* Styling for dropdown when open */
+  .custom-select:focus {
+    transform: translateY(2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Styling for options */
+  .custom-select option, 
+  .custom-select optgroup {
+    background-color: #1f2937; /* dark background */
+    color: white;
+    padding: 8px;
+  }
+</style>
+
+<script>
+  // Add smooth behavior to all select elements
+  document.addEventListener('DOMContentLoaded', function() {
+    const selects = document.querySelectorAll('.custom-select');
+    
+    selects.forEach(select => {
+      select.addEventListener('mousedown', function(e) {
+        if (window.innerWidth > 768) { // Only on desktop
+          // Add animation class
+          this.classList.add('animate-open');
+          
+          // Remove animation class after animation completes
+          setTimeout(() => {
+            this.classList.remove('animate-open');
+          }, 300);
+        }
+      });
+    });
+  });
+</script>

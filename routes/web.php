@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ArchiveProjectController;
 use App\Http\Controllers\ProjectDetailController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 //Route for landing page
@@ -15,13 +16,16 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+//Route for Dashboard
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
 //Route for Projects
 Route::get('/projects', [ProjectController::class, 'listProjects'])->middleware(['auth'])->name('projects');
 Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
 Route::get('/projects/{id}', [ProjectController::class, 'show'])->name('projects.show');
 Route::get('/projects/{id}/edit', [ProjectController::class, 'edit'])->name('projects.edit');
 Route::put('/projects/{id}', [ProjectController::class, 'update'])->name('projects.update');
-Route::put('/projects/{id}/archive', [ProjectController::class, 'archive'])->name('projects.archive');
+Route::put('/projects/{id}/archive', [ArchiveProjectController::class, 'archive'])->middleware(['auth'])->name('projects.archive');
 Route::delete('/projects/{id}', [ProjectController::class, 'destroy'])->name('projects.destroy');
 Route::put('/projects/{id}/status', [ProjectController::class, 'updateStatus'])->name('projects.updateStatus');
 

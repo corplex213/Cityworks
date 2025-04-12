@@ -1,4 +1,3 @@
-<!-- filepath: c:\Users\bonsi\OneDrive\Documents\CityWorks\resources\views\projects.blade.php -->
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-2xl text-gray-800 dark:text-gray-200 leading-tight">
@@ -27,6 +26,36 @@
                                        class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 p-2 pl-10 rounded-lg shadow focus:ring-2 focus:ring-blue-500 focus:outline-none">
                             </form>
                         </div>
+                        <div class="relative">
+                            <button id="sortDropdownButton" onclick="toggleSortDropdown()" 
+                                    class="flex items-center justify-between w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 p-2 rounded-lg shadow focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                Sort Options
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div id="sortDropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg transition-all duration-300 ease-out opacity-0 transform scale-95 z-50">
+                                <form method="GET" action="{{ route('projects') }}" id="sortForm">
+                                    <input type="hidden" name="search" value="{{ request('search') }}">
+                                    <button type="submit" name="sort" value="created_at" 
+                                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                        Sort by Created At
+                                    </button>
+                                    <button type="submit" name="sort" value="proj_name" 
+                                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                        Sort by Project Name
+                                    </button>
+                                    <button type="submit" name="sort" value="location" 
+                                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                        Sort by Location
+                                    </button>
+                                    <button type="submit" name="sort" value="status" 
+                                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                        Sort by Status
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                         <button onclick="openModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg shadow whitespace-nowrap">
                             Add Project
                         </button>
@@ -37,93 +66,121 @@
                         <table class="min-w-full bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                             <thead class="bg-gray-100 dark:bg-gray-700">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-sm font-medium text-gray-800 dark:text-gray-200 rounded-tl-lg">Project Name</th>
-                                    <th class="px-6 py-3 text-left text-sm font-medium text-gray-800 dark:text-gray-200">Location</th>
-                                    <th class="px-6 py-3 text-left text-sm font-medium text-gray-800 dark:text-gray-200">Status</th>
-                                    <th class="px-6 py-3 text-left text-sm font-medium text-gray-800 dark:text-gray-200">Created At</th>
+                                    <th class="px-6 py-3 text-left text-sm font-medium text-gray-800 dark:text-gray-200 rounded-tl-lg">
+                                        <a href="{{ route('projects', ['sort' => 'proj_name', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => request('search')]) }}">
+                                            Project Name
+                                            @if(request('sort') == 'proj_name')
+                                                <span>{{ request('direction') == 'asc' ? '▲' : '▼' }}</span>
+                                            @endif
+                                        </a>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-sm font-medium text-gray-800 dark:text-gray-200">
+                                        <a href="{{ route('projects', ['sort' => 'location', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => request('search')]) }}">
+                                            Location
+                                            @if(request('sort') == 'location')
+                                                <span>{{ request('direction') == 'asc' ? '▲' : '▼' }}</span>
+                                            @endif
+                                        </a>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-sm font-medium text-gray-800 dark:text-gray-200">
+                                        <a href="{{ route('projects', ['sort' => 'status', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => request('search')]) }}">
+                                            Status
+                                            @if(request('sort') == 'status')
+                                                <span>{{ request('direction') == 'asc' ? '▲' : '▼' }}</span>
+                                            @endif
+                                        </a>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-sm font-medium text-gray-800 dark:text-gray-200">
+                                        <a href="{{ route('projects', ['sort' => 'created_at', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => request('search')]) }}">
+                                            Created At
+                                            @if(request('sort') == 'created_at')
+                                                <span>{{ request('direction') == 'asc' ? '▲' : '▼' }}</span>
+                                            @endif
+                                        </a>
+                                    </th>
                                     <th class="px-6 py-3 text-center text-sm font-medium text-gray-800 dark:text-gray-200 rounded-tr-lg">
                                         Actions
                                     </th>
-                                    
                                 </tr>
                             </thead>
                             <tbody id="projectTableBody" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                @forelse($projects as $project)
-                                    @if(!$project->archived)
-                                        <tr class="project-row hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
-                                            <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100 project-name">
-                                                <a href="javascript:void(0)" onclick="openProject('{{ $project->proj_name }}', '{{ $project->description }}')" 
-                                                class="font-medium text-blue-600 dark:text-blue-400 hover:underline">
-                                                    {{ $project->proj_name }}
-                                                </a>
-                                            </td>
-                                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                                                {{ $project->location }}
-                                            </td>
-                                            <td class="px-6 py-4 text-sm">
-                                                <div class="relative">
-                                                    <button onclick="toggleStatusDropdown({{ $project->id }})" 
-                                                            class="flex items-center px-2 py-1 rounded-lg focus:outline-none 
-                                                            {{ $project->status === 'In Progress' ? 'bg-yellow-100 text-yellow-800' : ($project->status === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800') }}">
-                                                        <span class="inline-block w-3 h-3 rounded-full mr-2 
-                                                            {{ $project->status === 'In Progress' ? 'bg-yellow-500' : ($project->status === 'Completed' ? 'bg-green-500' : 'bg-red-500') }}">
-                                                        </span>
-                                                        {{ $project->status }}
+                                @forelse($projects->where('archived', false) as $project)
+                                <tr class="project-row hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+                                    <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100 project-name">
+                                        <a href="{{ route('projects.show', $project->id) }}" 
+                                           class="font-medium text-blue-600 dark:text-blue-400 hover:underline">
+                                            {{ $project->proj_name }}
+                                        </a>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                                        {{ $project->location }}
+                                    </td>
+                                    <td class="px-6 py-4 text-sm">
+                                        <div class="relative">
+                                            <button onclick="toggleStatusDropdown({{ $project->id }})" 
+                                                    class="flex items-center px-2 py-1 rounded-lg focus:outline-none 
+                                                    {{ $project->status === 'In Progress' ? 'bg-yellow-100 text-yellow-800' : ($project->status === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800') }}">
+                                                <span class="inline-block w-3 h-3 rounded-full mr-2 
+                                                    {{ $project->status === 'In Progress' ? 'bg-yellow-500' : ($project->status === 'Completed' ? 'bg-green-500' : 'bg-red-500') }}">
+                                                </span>
+                                                {{ $project->status }}
+                                            </button>
+                                            <div id="statusDropdown-{{ $project->id }}" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg shadow-lg z-50">
+                                                <form action="{{ route('projects.updateStatus', $project->id) }}" method="POST">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <button type="submit" name="status" value="In Progress" 
+                                                            class="block w-full text-left px-4 py-2 text-sm text-yellow-400 hover:bg-yellow-100 dark:hover:bg-yellow-700">
+                                                        In Progress
                                                     </button>
-                                                    <div id="statusDropdown-{{ $project->id }}" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg shadow-lg z-50">
-                                                        <form action="{{ route('projects.updateStatus', $project->id) }}" method="POST">
-                                                            @csrf
-                                                            @method('PUT')
-                                                            <button type="submit" name="status" value="In Progress" 
-                                                                    class="block w-full text-left px-4 py-2 text-sm text-yellow-400 hover:bg-yellow-100 dark:hover:bg-yellow-700">
-                                                                In Progress
-                                                            </button>
-                                                            <button type="submit" name="status" value="Completed" 
-                                                                    class="block w-full text-left px-4 py-2 text-sm text-green-400 hover:bg-green-100 dark:hover:bg-green-700">
-                                                                Completed
-                                                            </button>
-                                                            <button type="submit" name="status" value="Delayed" 
-                                                                    class="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-100 dark:hover:bg-red-700">
-                                                                Delayed
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                                                {{ $project->created_at->format('M d, Y') }}
-                                            </td>
-                                            <td class="px-6 py-4 text-right text-sm">
-                                                <div class="flex items-center justify-center space-x-4">
-                                                    <!-- Edit Icon -->
-                                                    <button onclick="openEditModal('{{ $project->id }}', '{{ $project->proj_name }}', '{{ $project->location }}', '{{ $project->description }}')" 
-                                                            class="text-blue-500 hover:text-blue-700 transition duration-300 ease-in-out">
+                                                    <button type="submit" name="status" value="Completed" 
+                                                            class="block w-full text-left px-4 py-2 text-sm text-green-400 hover:bg-green-100 dark:hover:bg-green-700">
+                                                        Completed
+                                                    </button>
+                                                    <button type="submit" name="status" value="Delayed" 
+                                                            class="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-100 dark:hover:bg-red-700">
+                                                        Delayed
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                                        {{ $project->created_at->format('M d, Y') }}
+                                    </td>
+                                    <td class="px-6 py-4 text-right text-sm">
+                                        <div class="flex items-center justify-center space-x-4">
+                                            <!-- Edit Icon -->
+                                            <button onclick="openEditModal('{{ $project->id }}', '{{ $project->proj_name }}', '{{ $project->location }}', '{{ $project->description }}')" 
+                                                    class="flex items-center justify-center text-blue-500 hover:text-blue-700 transition duration-300 ease-in-out h-8 w-8">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-5M16 5l3 3m-9 6l3-3m-3 3l-3-3" />
+                                                </svg>
+                                            </button>
+
+                                            <!-- Archive Icon -->
+                                            <div class="flex items-center justify-center h-8 w-8">
+                                                <form action="{{ route('projects.archive', $project->id) }}" method="POST">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <button type="submit" class="flex items-center justify-center text-yellow-500 hover:text-yellow-700 transition duration-300 ease-in-out h-8 w-8">
                                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-5M16 5l3 3m-9 6l3-3m-3 3l-3-3" />
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 19H5V6h14v13zM12 2v4m4 10H8" />
                                                         </svg>
                                                     </button>
-                                                    <!-- Archive Icon -->
-                                                    <form action="{{ route('projects.archive', $project->id) }}" method="POST">
-                                                        @csrf
-                                                        @method('PUT')
-                                                        <button type="submit" class="text-yellow-500 hover:text-yellow-700 transition duration-300 ease-in-out">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 19H5V6h14v13zM12 2v4m4 10H8" />
-                                                            </svg>
-                                                        </button>
-                                                    </form>
-                                                    <!-- Delete Icon -->
-                                                    <button onclick="openDeleteModal({{ $project->id }}, '{{ route('projects.destroy', $project->id) }}')" 
-                                                            class="text-red-500 hover:text-red-700 transition duration-300 ease-in-out">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                                        </svg>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endif
-                                @empty
+                                                </form>
+                                            </div>
+                                            <!-- Delete Icon -->
+                                            <button onclick="openDeleteModal({{ $project->id }}, '{{ route('projects.destroy', $project->id) }}')" 
+                                                    class="flex items-center justify-center text-red-500 hover:text-red-700 transition duration-300 ease-in-out h-8 w-8">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
                                     <tr>
                                         <td colspan="5" class="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
                                             No projects available.
@@ -249,8 +306,6 @@
 
     <!-- JavaScript for Modal and Dropdown -->
     <script>
-    
-
         function toggleModal(modalId, isVisible) {
             const modal = document.getElementById(modalId);
             if (isVisible) {
@@ -343,6 +398,40 @@
             setTimeout(() => {
                 modal.classList.add('hidden');
             }, 300);
+        }
+        function toggleSortDropdown() {
+            const dropdown = document.getElementById('sortDropdownMenu');
+            const button = document.getElementById('sortDropdownButton');
+
+            // Toggle dropdown visibility
+            if (dropdown.classList.contains('hidden')) {
+                dropdown.classList.remove('hidden');
+                setTimeout(() => {
+                    dropdown.classList.remove('opacity-0', 'scale-95');
+                    dropdown.classList.add('opacity-100', 'scale-100');
+                }, 10);
+
+                // Add event listener to close dropdown when clicking outside
+                document.addEventListener('click', closeDropdownOnClickOutside);
+            } else {
+                closeDropdown();
+            }
+
+            function closeDropdown() {
+                dropdown.classList.remove('opacity-100', 'scale-100');
+                dropdown.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => {
+                    dropdown.classList.add('hidden');
+                }, 300);
+                // Remove the event listener
+                document.removeEventListener('click', closeDropdownOnClickOutside);
+            }
+
+            function closeDropdownOnClickOutside(event) {
+                if (!dropdown.contains(event.target) && !button.contains(event.target)) {
+                    closeDropdown();
+                }
+            }
         }
     </script>
 </x-app-layout>
