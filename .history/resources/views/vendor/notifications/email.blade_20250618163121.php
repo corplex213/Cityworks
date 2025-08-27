@@ -1,0 +1,55 @@
+<x-mail::message>
+{{-- Custom Logo or Header --}}
+<div style="text-align:center; margin-bottom: 24px;">
+    <img src="https://new.baguio.gov.ph/" alt="CityWorks Logo" style="height: 60px;">
+</div>
+
+{{-- Custom Greeting --}}
+# Hi, {{ $user->name ?? 'User' }}!
+
+{{-- Custom Intro --}}
+Thank you for registering with **CityWorks**. To get started and access all features, please verify your email address by clicking the button below.
+
+{{-- Action Button --}}
+@isset($actionText)
+<?php
+    $color = match ($level) {
+        'success', 'error' => $level,
+        default => 'primary',
+    };
+?>
+<x-mail::button :url="$actionUrl" :color="$color">
+{{ $actionText }}
+</x-mail::button>
+@endisset
+
+{{-- Custom Outro --}}
+If you did not create an account, no further action is required.
+
+This verification link will expire in 60 minutes.
+
+Best regards,  
+City Engineering Office
+
+{{-- Subcopy --}}
+@isset($actionText)
+<x-slot:subcopy>
+@lang(
+    "If you're having trouble clicking the \":actionText\" button, copy and paste the URL below\n".
+    'into your web browser:',
+    [
+        'actionText' => $actionText,
+    ]
+) <span class="break-all">[{{ $displayableActionUrl }}]({{ $actionUrl }})</span>
+</x-slot:subcopy>
+@endisset
+</x-mail::message>
+
+{{-- Custom Footer --}}
+<x-slot:footer>
+<div style="text-align: center; margin-top: 24px; font-size: 12px; color: #999;">
+    &copy; {{ date('Y') }} City Engineering Office. All rights reserved.
+</div>
+</x-slot:footer>
+
+{{-- Custom Styles --}} 

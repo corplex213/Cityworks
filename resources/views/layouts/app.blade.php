@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>{{ config('app.name', 'City Engineering Office') }}</title>
-
+        <link rel="icon" type="image/png" href="{{ asset('frontend/img/baguio-logo.ico') }}">
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
@@ -34,5 +34,17 @@
                 @livewireScripts
             </main>
         </div>
+        @stack('scripts')
+        <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/laravel-echo/1.11.3/echo.iife.js"></script>
+        <script>
+            window.Echo = new Echo({
+                broadcaster: 'pusher',
+                key: '{{ config('broadcasting.connections.pusher.key') }}',
+                cluster: '{{ config('broadcasting.connections.pusher.options.cluster') }}',
+                forceTLS: true
+            });
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     </body>
 </html>

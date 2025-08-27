@@ -1,6 +1,15 @@
+<!-- filepath: resources/views/auth/verify-email.blade.php -->
 <x-guest-layout>
     <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
         {{ __('Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn\'t receive the email, we will gladly send you another.') }}
+    </div>
+    <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
+        {!! __('
+            <strong>Note</strong>: Check the verification in the <strong>SPAM</strong> messages.'
+        ) !!}
+    </div>
+    <div class="mb-4 text-sm text-gray-600 dark:text-gray-300 bg-yellow-100 dark:bg-gray-900 rounded p-3">
+        {{ __('After verifying your email, please wait for an administrator to approve your registration before you can access the website.') }}
     </div>
 
     @if (session('status') == 'verification-link-sent')
@@ -9,7 +18,7 @@
         </div>
     @endif
 
-    <div class="mt-4 flex items-center justify-between">
+    <div class="mt-6 flex items-center justify-between">
         <form method="POST" action="{{ route('verification.send') }}">
             @csrf
 
@@ -27,5 +36,6 @@
                 {{ __('Log Out') }}
             </button>
         </form>
+        
     </div>
 </x-guest-layout>

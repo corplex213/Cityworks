@@ -1,0 +1,182 @@
+        .fc-daygrid-day-number {
+            color: #fff !important;
+        }
+        /* Modern Calendar Styling */
+        .fc {
+            @apply font-sans h-full;
+        }
+        
+        .fc .fc-view {
+            @apply h-full;
+        }
+        
+        .fc-view-harness {
+            @apply h-full !important;
+        }
+
+        /* Google Calendar-like styling */
+        .fc-toolbar {
+            @apply mb-6 !important;
+        }
+
+        .fc-toolbar-title {
+            @apply text-2xl font-bold tracking-wider;
+            color: #fff !important;
+        }
+
+        .fc-button-primary {
+            @apply bg-slate-700 text-gray-200 border-slate-600 shadow-md hover:bg-slate-600 active:bg-slate-800 focus:ring-2 !important;
+            @apply transition-all duration-200 ease-in-out;
+        }
+
+        .fc-button-primary:not(:disabled).fc-button-active {
+            background: #3b82f6!important; 
+        }
+
+        .fc-day-today {
+            background: none !important;
+        }
+
+        .fc-day-today .fc-daygrid-day-number {
+            background: #3b82f6!important; 
+            color: #fff !important;
+            border-radius: 9999px !important;
+            width: 2rem !important;
+            height: 2rem !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 auto !important;
+            font-weight: bold !important;
+            box-shadow: 0 2px 8px 0 rgb(6 182 212 / 20%);
+            position: relative;
+            z-index: 1;
+            padding: 0 !important;
+        }
+
+        .fc-daygrid-event {
+            @apply rounded-md shadow-sm border-none py-1 px-2 !important;
+            @apply transition-all duration-200 ease-in-out;
+        }
+
+        .fc-daygrid-event:hover {
+            @apply transform scale-105 shadow-lg !important;
+        }
+
+        .fc-daygrid-day-number {
+            @apply text-gray-200 font-medium text-base p-2 hover:text-cyan-400 transition-colors;
+        }
+
+        .fc-col-header-cell {
+            background: #fff !important;
+        }
+
+        .fc-col-header-cell-cushion {
+            color: #222 !important;
+        }
+
+        .fc-scrollgrid {
+            @apply border-slate-600 !important;
+        }
+
+        .fc-scrollgrid td {
+            @apply border-slate-600/50 !important;
+        }
+
+        /* Enhanced event colors */
+        .event-completed {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
+            @apply text-white;
+        }
+        
+        .event-checking {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+            @apply text-white;
+        }
+        
+        .event-revision {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+            @apply text-white;
+        }
+        
+        .event-pending {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+            @apply text-white;
+        }
+
+        /* Enhanced tooltip */
+        .event-tooltip {
+            @apply bg-slate-800 text-white p-4 rounded-lg shadow-xl border border-slate-600;
+            @apply max-w-xs;
+        }
+
+        .event-tooltip strong {
+            @apply text-cyan-400 block mb-2;
+        }
+
+        .event-tooltip br {
+            @apply my-1;
+        }
+
+        /* Weekend styling */
+        .fc-day-sun .fc-daygrid-day-number,
+        .fc-day-sat .fc-daygrid-day-number {
+            @apply text-cyan-300;
+        }
+        .fc-day-sun,
+        .fc-day-sat {
+            background: transparent !important;
+        }
+        .fc-timegrid-col.fc-day-sun,
+        .fc-timegrid-col.fc-day-sat {
+            background: transparent !important;
+        }
+
+        /* Past and future dates styling */
+        .fc-day-past .fc-daygrid-day-number {
+            @apply text-gray-500;
+        }
+
+        .fc-day-future .fc-daygrid-day-number {
+            @apply text-gray-200;
+        }
+
+        /* Event styling */
+        .fc-event {
+            @apply cursor-pointer transition-all duration-200;
+            cursor: pointer !important;
+        }
+
+        .fc-event-title {
+            @apply font-medium text-sm truncate;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 640px) {
+            .fc-toolbar {
+                @apply flex-col space-y-2;
+            }
+            
+            .fc-toolbar-title {
+                @apply text-xl;
+            }
+            
+            .fc-header-toolbar {
+                @apply flex-col space-y-2;
+            }
+            
+            .fc-toolbar-chunk {
+                @apply flex justify-center;
+            }
+        }
+        .fc-timegrid-axis-cushion,
+        .fc-timegrid-slot-label,
+        .fc-timegrid-all-day-cushion {
+            color: #fff !important;
+        }
+        .fc-event.calendar-event, /* for v5+ */
+.fc-event.calendar-event .fc-event-main {
+    background-color: #fff !important;
+    color: #222 !important; /* Optional: make text readable */
+    border: 1px solid #d1d5db !important; /* Optional: subtle border */
+}

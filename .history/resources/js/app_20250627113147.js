@@ -1,0 +1,14 @@
+import './bootstrap';
+
+import Alpine from 'alpinejs';
+window.Alpine = Alpine;
+Alpine.start();
+
+import Echo from 'laravel-echo';
+window.Pusher = require('pusher-js');
+window.Echo = new Echo({
+    broadcaster: 'pusher',
+    key: '8697f3adbe2014e43d69',
+    cluster: 'mt1',
+    forceTLS: true
+});

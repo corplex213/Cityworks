@@ -1,0 +1,144 @@
+        .tab-button {
+            transition: color 0.3s ease, border-color 0.3s ease;
+        }
+    
+        .tab-button:hover {
+            color: #2563eb; /* Tailwind's blue-600 */
+        }
+    
+        .tab-button.active {
+            color: #2563eb; /* Tailwind's blue-600 */
+            border-color: #2563eb; /* Tailwind's blue-600 */
+        }
+        /* Hide the toggle, subtask, and delete-subtask buttons by default */
+        .task-column .subtask-toggle-btn,
+        .task-column .subtask-btn,
+        .task-column .delete-subtask-btn {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease-in-out;
+        }
+
+        /* Show the buttons when hovering over the task column */
+        .task-column:hover .subtask-toggle-btn,
+        .task-column:hover .subtask-btn,
+        .task-column:hover .delete-subtask-btn {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .cursor-not-allowed {
+            cursor: not-allowed !important;
+            opacity: 0.5;
+        }
+
+/* Task Description Card */
+.task-desc-card {
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 4px 24px 0 rgba(30,41,59,0.10), 0 1.5px 4px 0 rgba(30,41,59,0.04);
+    padding: 2rem 2rem 1.5rem 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid #e5e7eb;
+    transition: box-shadow 0.2s;
+}
+.dark .task-desc-card {
+    background: #23272f;
+    border-color: #374151;
+}
+
+/* Quill Editor Customization */
+.ql-toolbar.ql-snow {
+    background: #f3f4f6 !important;
+    border: none !important;
+    border-radius: 0.75rem 0.75rem 0 0 !important;
+    color: #374151 !important;
+}
+.dark .ql-toolbar.ql-snow {
+    background: #23272f !important;
+    color: #e5e7eb !important;
+}
+.ql-container.ql-snow {
+    background: #f9fafb !important;
+    border: none !important;
+    border-radius: 0 0 0.75rem 0.75rem !important;
+    color: #1a202c !important;
+    min-height: 200px;
+    font-size: 1rem;
+}
+.dark .ql-container.ql-snow {
+    background: #23272f !important;
+    color: #e5e7eb !important;
+}
+.ql-editor {
+    min-height: 200px;
+    color: #1a202c !important;
+    background: #f9fafb !important;
+    border-radius: 0 0 0.75rem 0.75rem !important;
+    padding: 1.25rem !important;
+}
+.dark .ql-editor {
+    color: #e5e7eb !important;
+    background: #23272f !important;
+}
+
+#taskDescriptionReadonly,
+#taskDescriptionEditorWrapper {
+    transition: opacity 0.2s;
+}
+#taskDescriptionReadonly.fade-out,
+#taskDescriptionEditorWrapper.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+#taskDescriptionReadonly.fade-in,
+#taskDescriptionEditorWrapper.fade-in {
+    opacity: 1;
+    pointer-events: auto;
+}
+#taskDescriptionEditor .ql-editor {
+    background-color: #23272f !important; 
+    color: #e5e7eb !important;
+    border-radius: 0.75rem;
+    min-height: 250px;
+    padding: 1.25rem !important;
+}
+#taskDescriptionEditor .ql-toolbar {
+    background: #23272f !important;
+    border: none !important;
+    color: #e5e7eb !important;
+}
+#taskDescriptionEditor .ql-container {
+    border: none !important;
+}
+#taskDescriptionEditor .ql-editor {
+    min-height: 250px;
+    max-height: 600px; 
+    overflow-y: auto;
+    height: auto !important;
+    resize: vertical; 
+}
+
+/* Force Quill toolbar icons and text to be pure white in dark mode */
+#taskDescriptionEditor .ql-toolbar .ql-picker,
+#taskDescriptionEditor .ql-toolbar .ql-picker-label,
+#taskDescriptionEditor .ql-toolbar .ql-picker-item,
+#taskDescriptionEditor .ql-toolbar button {
+    color: #fff !important;
+}
+
+#taskDescriptionEditor .ql-toolbar button svg,
+#taskDescriptionEditor .ql-toolbar .ql-stroke,
+#taskDescriptionEditor .ql-toolbar .ql-fill {
+    stroke: #fff !important;
+    fill: #fff !important;
+    color: #fff !important;
+    opacity: 1 !important;
+}
+
+/* Optional: Make dropdown arrows and active/hovered buttons stand out */
+#taskDescriptionEditor .ql-toolbar button:hover,
+#taskDescriptionEditor .ql-toolbar button.ql-active {
+    background: #374151 !important;
+    color: #fff !important;
+}

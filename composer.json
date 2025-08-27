@@ -10,7 +10,11 @@
         "consoletvs/charts": "*",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
-        "livewire/livewire": "^3.6"
+        "league/commonmark": "2.7",
+        "livewire/livewire": "^3.6",
+        "pusher/pusher-php-server": "^7.2",
+        "spatie/laravel-activitylog": "^4.10",
+        "spatie/laravel-permission": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

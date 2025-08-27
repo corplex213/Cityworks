@@ -1,0 +1,18 @@
+.tab-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+    
+        .tab-link:hover {
+            color: #2563eb; /* Tailwind's blue-600 */
+        }
+    
+        .active-tab {
+            color: #2563eb; /* Tailwind's blue-600 */
+            font-weight: bold;
+        }
+    
+        #tabIndicator {
+            width: 0;
+            left: 0;
+        }

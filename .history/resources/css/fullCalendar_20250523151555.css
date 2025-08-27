@@ -1,0 +1,271 @@
+/* Base styling for calendar cells */
+.fc-daygrid-day-number {
+    color: #fff !important;
+}
+
+/* Fix day header format to show abbreviated days (Mon, Tue) */
+.fc-col-header-cell-cushion {
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    padding: 6px 4px !important;
+    text-transform: uppercase !important;
+}
+
+/* Make the calendar more compact */
+.fc {
+    @apply font-sans h-full;
+    max-height: calc(100vh - 10rem) !important; /* Limit maximum height */
+}
+
+.fc .fc-view {
+    @apply h-full;
+    font-size: 0.9rem !important; /* Slightly smaller font for compactness */
+}
+
+.fc-view-harness {
+    @apply h-full !important;
+}
+
+/* Tighter spacing for day cells */
+.fc-daygrid-day {
+    min-height: 5rem !important; /* Reduce minimum day height */
+}
+
+.fc-daygrid-day-frame {
+    padding: 2px !important; /* Reduce padding inside days */
+    min-height: 100% !important;
+}
+
+/* Google Calendar-like styling */
+.fc-toolbar {
+    @apply mb-4 !important; /* Reduce margin */
+}
+
+.fc-toolbar-title {
+    @apply text-2xl font-bold tracking-wider;
+    color: #fff !important;
+}
+
+.fc-button-primary {
+    @apply bg-slate-700 text-gray-200 border-slate-600 shadow-md hover:bg-slate-600 active:bg-slate-800 focus:ring-2 !important;
+    @apply transition-all duration-200 ease-in-out;
+    padding: 0.3rem 0.6rem !important; /* Smaller buttons */
+    font-size: 0.8rem !important;
+}
+
+.fc-button-primary:not(:disabled).fc-button-active {
+    background: #3b82f6!important; 
+}
+
+.fc-day-today {
+    background: none !important;
+}
+
+.fc-day-today .fc-daygrid-day-number {
+    background: #3b82f6!important; 
+    color: #fff !important;
+    border-radius: 9999px !important;
+    width: 1.75rem !important; /* Smaller for compactness */
+    height: 1.75rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 auto !important;
+    font-weight: bold !important;
+    box-shadow: 0 2px 8px 0 rgb(6 182 212 / 20%);
+    position: relative;
+    z-index: 1;
+    padding: 0 !important;
+    font-size: 0.85rem !important; /* Smaller text */
+}
+
+/* Event styling - make more compact */
+.fc-daygrid-event {
+    @apply rounded-md shadow-sm border-none py-0.5 px-1 !important; /* Smaller padding */
+    @apply transition-all duration-200 ease-in-out;
+    margin-top: 1px !important;
+    margin-bottom: 1px !important;
+    font-size: 0.8rem !important;
+}
+
+.fc-daygrid-event:hover {
+    @apply transform scale-105 shadow-lg !important;
+}
+
+.fc-daygrid-day-number {
+    @apply text-gray-200 font-medium text-sm p-1 hover:text-cyan-400 transition-colors;
+}
+
+/* Fix header colors */
+.fc-col-header-cell {
+    background: #1e293b !important; /* Match your dark theme background */
+    border-color: rgba(148, 163, 184, 0.2) !important; /* Lighter border */
+}
+
+.fc-col-header-cell-cushion {
+    color: #fff !important; /* White text for headers */
+}
+
+.fc-scrollgrid {
+    @apply border-slate-600 !important;
+}
+
+.fc-scrollgrid td {
+    @apply border-slate-600/50 !important;
+}
+
+/* Enhanced event colors */
+.event-completed {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
+    @apply text-white;
+}
+
+.event-checking {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+    @apply text-white;
+}
+
+.event-revision {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+    @apply text-white;
+}
+
+.event-pending {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+    @apply text-white;
+}
+
+/* Enhanced tooltip */
+.event-tooltip {
+    @apply bg-slate-800 text-white p-3 rounded-lg shadow-xl border border-slate-600;
+    @apply max-w-xs;
+}
+
+.event-tooltip strong {
+    @apply text-cyan-400 block mb-1;
+}
+
+.event-tooltip br {
+    @apply my-0.5;
+}
+
+/* Weekend styling */
+.fc-day-sun .fc-daygrid-day-number,
+.fc-day-sat .fc-daygrid-day-number {
+    @apply text-cyan-300;
+}
+.fc-day-sun,
+.fc-day-sat {
+    background: rgba(8, 47, 73, 0.3) !important; /* Subtle background for weekends */
+}
+
+/* Past and future dates styling */
+.fc-day-past .fc-daygrid-day-number {
+    @apply text-gray-500;
+}
+
+.fc-day-future .fc-daygrid-day-number {
+    @apply text-gray-200;
+}
+
+/* Event styling */
+.fc-event {
+    @apply cursor-pointer transition-all duration-200;
+    cursor: pointer !important;
+}
+
+.fc-event-title {
+    @apply font-medium text-sm truncate;
+}
+
+/* Make days of other months more distinct */
+.fc-day-other {
+    background-color: rgba(15, 23, 42, 0.7) !important; /* Darker background */
+}
+
+.fc-day-other .fc-daygrid-day-number {
+    opacity: 0.5 !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .fc-toolbar {
+        @apply flex-col space-y-2;
+    }
+    
+    .fc-toolbar-title {
+        @apply text-xl;
+    }
+    
+    .fc-header-toolbar {
+        @apply flex-col space-y-2;
+    }
+    
+    .fc-toolbar-chunk {
+        @apply flex justify-center;
+    }
+}
+
+/* Time grid fixes */
+.fc-timegrid-axis-cushion,
+.fc-timegrid-slot-label,
+.fc-timegrid-all-day-cushion {
+    color: #fff !important;
+}
+
+/* Fix white background events - IMPORTANT */
+.fc-event.calendar-event {
+    background-color: white !important;
+    border-color: #d1d5db !important;
+    color: #1f2937 !important;
+}
+
+.fc-event.calendar-event .fc-event-main {
+    background-color: white !important;
+    color: #1f2937 !important;
+    padding: 2px 4px !important;
+    border-radius: 2px !important;
+}
+
+.fc-event.calendar-event .fc-event-title {
+    color: #1f2937 !important;
+    font-weight: 500 !important;
+}
+
+/* Add styles for other users' tasks */
+.fc .other-user-task {
+    opacity: 0.85;
+    border-left: 3px solid #fbbf24 !important;
+}
+
+/* Active filter button styles */
+.task-filter.active {
+    font-weight: 600;
+}
+
+/* Fix for multi-day events */
+.fc-event-time {
+    font-size: 0.7rem !important;
+}
+
+/* Fix for list view */
+.fc-list-day-cushion {
+    background-color: #1e293b !important;
+}
+
+.fc-list-event:hover td {
+    background-color: rgba(59, 130, 246, 0.1) !important;
+}
+
+/* Set aspect ratio for more compact layout */
+.fc-dayGridMonth-view {
+    height: auto !important;
+}
+
+/* Fix for RTL languages */
+[dir="rtl"] .fc-event {
+    text-align: right;
+}
+
+/* Make sure Alpine.js doesn't interfere */
+[x-cloak] { display: none !important; }

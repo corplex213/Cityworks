@@ -1,0 +1,112 @@
+.kanban-column {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.kanban-add-card input:focus,
+.kanban-add-card select:focus {
+    outline: 2px solid #3b82f6;
+}
+.kanban-container {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+}
+
+.kanban-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.kanban-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.kanban-container::-webkit-scrollbar-thumb {
+    background-color: rgba(156, 163, 175, 0.5);
+    border-radius: 4px;
+}
+
+.task-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+}
+
+.task-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.task-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.task-list::-webkit-scrollbar-thumb {
+    background-color: rgba(156, 163, 175, 0.5);
+    border-radius: 3px;
+}
+
+.task-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.task-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.task-card.dragging {
+    opacity: 0.5;
+    transform: scale(0.95);
+}
+
+.column-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.task-list.drag-over {
+    background-color: rgba(59, 130, 246, 0.1);
+    border: 2px dashed #3b82f6;
+}
+
+.subtask-card {
+    font-size: 0.95em;
+    margin-left: 1rem;
+    background: #f9fafb;
+    border-left: 3px solid #3b82f6;
+}
+
+.subtask-row {
+    background: transparent;
+    border-left: 3px solid #3b82f6;
+    margin-bottom: 2px;
+    align-items: center;
+}
+
+.fc-timegrid-axis-cushion,
+.fc-timegrid-slot-label,
+.fc-timegrid-all-day-cushion {
+    color: #fff !important;
+}
+
+/* Dragging styles */
+.task-card.dragging {
+    opacity: 0.5;
+    transform: scale(0.95);
+}
+
+.task-list.drag-over {
+    background-color: rgba(59, 130, 246, 0.1);
+    border: 2px dashed #3b82f6;
+}
+
+.task-list.valid-drop-target {
+    border: 2px dashed rgba(59, 130, 246, 0.3);
+}
+
+/* Selection feedback */
+.task-card.task-selected {
+    box-shadow: 0 0 0 2px #3b82f6;
+}

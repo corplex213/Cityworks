@@ -49,7 +49,16 @@
 
         <div>
             <x-input-label for="position" :value="__('Position')" />
-            <x-text-input id="position" name="position" type="text" class="mt-1 block w-full bg-gray-100 dark:bg-gray-800" :value="old('position', $user->position)" readonly disabled />
+            <x-text-input
+                id="position"
+                name="position"
+                type="text"
+                class="mt-1 block w-full bg-gray-100 dark:bg-gray-800 not-allowed-cursor"
+                :value="old('position', $user->position)"
+                readonly
+                disabled
+                title="Not allowed to Edit"
+            />
             <x-input-error class="mt-2" :messages="$errors->get('position')" />
         </div>
 
@@ -65,6 +74,25 @@
                     class="text-sm text-gray-600 dark:text-gray-400"
                 >{{ __('Saved.') }}</p>
             @endif
+
+            @if (session('status') === 'profile-updated' && $user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
+                <div
+                    x-data="{ show: true }"
+                    x-show="show"
+                    x-transition
+                    x-init="setTimeout(() => show = false, 6000)"
+                    class="ml-4 px-4 py-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 rounded"
+                    role="alert"
+                >
+                    {{ __('You must verify your account. Please check your email for a verification link.') }}
+                </div>
+            @endif
         </div>
     </form>
 </section>
+
+<style>
+.not-allowed-cursor {
+    cursor: not-allowed !important;
+}
+</style>

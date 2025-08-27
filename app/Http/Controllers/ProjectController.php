@@ -4,15 +4,44 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\User;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
+use App\Mail\ProjectAssignedMail;
+use Illuminate\Support\Facades\Mail;
+use Spatie\Activitylog\Models\Activity;
+use App\Events\ProjectCreated;
+use App\Events\ProjectDeleted;
 
 class ProjectController extends Controller
 {
+    protected $notificationService;
+
+    public function __construct(NotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+        $this->middleware('permission:view activities')->only(['show', 'listProjects']);
+        $this->middleware('permission:create activities')->only(['store']);
+        $this->middleware('permission:edit activities')->only(['edit', 'update', 'updateStatus']);
+        $this->middleware('permission:delete activities')->only(['destroy', 'bulkDelete']);
+        $this->middleware('permission:archive activities')->only(['bulkArchive']);
+    }
+
     public function show($id)
     {
         $project = Project::findOrFail($id);
-        $users = User::all();
-        return view('project-management', compact('project', 'users'));
+
+        // Users with tasks for Kanban
+        $userIdsWithTasks = \App\Models\Task::where('project_id', $project->id)
+            ->whereNull('parent_task_id')
+            ->pluck('assigned_to')
+            ->unique()
+            ->toArray();
+        $users = \App\Models\User::whereIn('id', $userIdsWithTasks)->get();
+
+        // All users for the modal
+        $allUsers = \App\Models\User::all();
+
+        return view('project-management', compact('project', 'users', 'allUsers'));
     }
     
     // Show all projects
@@ -20,14 +49,19 @@ class ProjectController extends Controller
     {
         $query = Project::where('archived', false);
 
-        // Check if a search query is provided
+        // Apply search filter
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('proj_name', 'like', '%' . $search . '%')
-                ->orWhere('location', 'like', '%' . $search . '%')
-                ->orWhere('description', 'like', '%' . $search . '%');
+                ->orWhere('proj_type', 'like', '%' . $search . '%')
+                ->orWhere('status', 'like', '%' . $search . '%');
             });
+        }
+
+        // Apply project type filter (tab selection)
+        if ($request->has('proj_type') && $request->proj_type != '') {
+            $query->where('proj_type', $request->proj_type);
         }
 
         // Handle sorting
@@ -46,26 +80,42 @@ class ProjectController extends Controller
     {
         $request->validate([
             'proj_name' => 'required|string|max:255',
-            'location' => 'required|string|max:255',
-            'description' => 'required|string',
+            'proj_type' => 'required|string|in:POW,Investigation,MTS,Communication,R&D',
         ]);
 
-        // Add the default status
-        $data = $request->all();
-        $data['status'] = 'In Progress';
+        $project = Project::create([
+            'proj_name' => $request->proj_name,
+            'proj_type' => $request->proj_type,
+            'status' => 'In Progress',
+            'archived' => false,
+        ]);
 
-        Project::create($data);
+        // Log activity
+        activity()
+        ->causedBy(auth()->user())
+        ->performedOn($project)
+        ->log('Created activity: ' . $project->proj_name);
 
-        return redirect()->route('projects')->with('success', 'Project created successfully.');
+        // Create notification for all users about the new project
+        $this->notificationService->createForAllUsers(
+            'activity_created',
+            'New Activity Created',
+            'A new activity "' . $project->proj_name . '" has been created.',
+            route('projects.show', $project->id)
+        );
+
+        broadcast(new ProjectCreated($project))->toOthers();
+        return redirect()->route('projects.show', $project->id)->with('success', 'Activity created successfully.');
     }
 
     // Show edit form
     public function edit($id)
     {
+        $this->authorize('edit projects');
         $project = Project::findOrFail($id);
         return view('edit_project', compact('project'));
     }
-
+    
     // Update Project
     public function update(Request $request, $id)
     {
@@ -73,40 +123,106 @@ class ProjectController extends Controller
 
         $request->validate([
             'proj_name' => 'required|string|max:255',
-            'location' => 'required|string|max:255',
-            'description' => 'required|string',
+            'proj_type' => 'required|string|in:POW,Investigation,MTS,Communication,R&D',
         ]);
 
         $project->update([
             'proj_name' => $request->proj_name,
-            'location' => $request->location,
-            'description' => $request->description,
+            'proj_type' => $request->proj_type,
             'status' => $project->status,
         ]);
 
-        return redirect()->route('projects')->with('success', 'Project updated successfully.');
+        // Log activity
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($project)
+            ->log('Updated activity: ' . $project->proj_name);
+
+        return redirect()->route('projects')->with('success', 'Activity updated successfully.');
     }
     // Delete Project
     public function destroy($id)
     {
         $project = Project::findOrFail($id);
+        // Log activity
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($project)
+            ->log('Deleted activity: ' . $project->proj_name);
+        broadcast(new ProjectDeleted($project))->toOthers();
         $project->delete();
 
-        return redirect()->route('projects')->with('success', 'Project deleted successfully.');
+        return redirect()->route('projects')->with('success', 'Activity deleted successfully.');
     }
     public function updateStatus(Request $request, $id)
     {
         $project = Project::findOrFail($id);
 
         $request->validate([
-            'status' => 'required|string|in:In Progress,Completed,Delayed', // Validate status
+            'status' => 'required|string|in:In Progress,Completed,Deferred',
         ]);
 
+        $oldStatus = $project->status;
         $project->update([
             'status' => $request->status,
         ]);
 
-        return redirect()->route('projects')->with('success', 'Project status updated successfully.');
+        // Create notification if status is changed to Completed
+        if ($request->status === 'Completed' && $oldStatus !== 'Completed') {
+            $this->notificationService->createForAllUsers(
+                'activity_completed',
+                'Activity Completed',
+                'The activity "' . $project->proj_name . '" has been marked as completed.',
+                route('projects.show', $project->id)
+            );
+        }
+
+        return redirect()->route('projects')->with('success', 'Activity status updated successfully.');
     }
-    
+    public function bulkDelete(Request $request)
+    {
+        $ids = json_decode($request->input('ids'), true);
+
+        if (is_array($ids) && count($ids) > 0) {
+            // Delete each project individually to ensure events fire
+            foreach ($ids as $id) {
+                $project = Project::find($id);
+                if ($project) {
+                    // Log activity before deleting
+                    activity()
+                        ->causedBy(auth()->user())
+                        ->performedOn($project)
+                        ->log('Deleted activity: ' . $project->proj_name);
+
+                    broadcast(new ProjectDeleted($project))->toOthers();
+                    $project->delete(); 
+                }
+            }
+            return redirect()->route('projects')->with('success', 'Selected activities have been deleted.');
+        }
+
+        return redirect()->route('projects')->with('error', 'No activities selected for deletion.');
+    }
+    public function bulkArchive(Request $request)
+{
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:projects,id',
+        ]);
+
+        $ids = is_string($request->ids) ? explode(',', $request->ids) : $request->ids;
+
+        $projects = Project::whereIn('id', $ids)->get();
+
+        foreach ($projects as $project) {
+            $project->update(['archived' => true]);
+            // Log activity for each archived project
+            activity()
+                ->causedBy(auth()->user())
+                ->performedOn($project)
+                ->log('Archived activity: ' . $project->proj_name);
+        }
+
+        return redirect()->route('projects')->with('success', 'Selected activities archived successfully.');
+    }
 }

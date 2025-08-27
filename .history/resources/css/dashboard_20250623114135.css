@@ -1,0 +1,34 @@
+/* Print-friendly style for PDF export */
+.pdf-export-style {
+  background: #fff !important;
+  color: #222 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+.pdf-export-style table {
+  background: #fff !important;
+  color: #222 !important;
+}
+.pdf-export-style th, .pdf-export-style td {
+  background: #fff !important;
+  color: #222 !important;
+  border: 1px solid #ccc !important;
+}
+.pdf-export-style .bg-yellow-100,
+.pdf-export-style .bg-green-100,
+.pdf-export-style .bg-red-100,
+.pdf-export-style .bg-blue-100,
+.pdf-export-style .dark\\:bg-yellow-900,
+.pdf-export-style .dark\\:bg-green-900,
+.pdf-export-style .dark\\:bg-red-900,
+.pdf-export-style .dark\\:bg-blue-900 {
+  background: #fff !important;
+  color: #222 !important;
+}
+.pdf-export-style span,
+.pdf-export-style .inline-flex {
+  background: none !important;
+  color: #222 !important;
+  border: none !important;
+  box-shadow: none !important;
+}

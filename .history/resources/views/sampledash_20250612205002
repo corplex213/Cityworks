@@ -1,0 +1,565 @@
+<x-app-layout>
+    @vite(['resources/js/dashboard.js'])
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            {{ __('Welcome User!') }}
+        </h2>
+    </x-slot>
+
+
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
+
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <!-- Project Statistics Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <!-- Total Projects Card -->
+                <div id="total-projects-card" class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
+                    <div class="p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-blue-100 dark:bg-blue-900">
+                                <svg class="w-6 h-6 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Projects</p>
+                                <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $totalProjects }}</p>
+                                <p class="text-xs mt-1 flex items-center">
+                                    @if($totalProjectsTrend > 0)
+                                        <span class="text-green-600 dark:text-green-400">&#9650; {{ $totalProjectsTrend }}%</span>
+                                    @elseif($totalProjectsTrend < 0)
+                                        <span class="text-red-600 dark:text-red-400">&#9660; {{ abs($totalProjectsTrend) }}%</span>
+                                    @else
+                                        <span class="text-gray-500 dark:text-gray-400">0%</span>
+                                    @endif
+                                    <span class="ml-1 text-gray-400">vs last week</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- In Progress Card -->
+                <div id="in-progress-card" class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
+                    <div class="p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-yellow-100 dark:bg-yellow-900">
+                                <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">In Progress</p>
+                                <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $inProgressProjects }}</p>
+                                <p class="text-xs mt-1 flex items-center">
+                                    @if($inProgressTrend > 0)
+                                        <span class="text-green-600 dark:text-green-400">&#9650; {{ $inProgressTrend }}%</span>
+                                    @elseif($inProgressTrend < 0)
+                                        <span class="text-red-600 dark:text-red-400">&#9660; {{ abs($inProgressTrend) }}%</span>
+                                    @else
+                                        <span class="text-gray-500 dark:text-gray-400">0%</span>
+                                    @endif
+                                    <span class="ml-1 text-gray-400">vs last week</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Completed Card -->
+                <div id="completed-card" class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
+                    <div class="p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-green-100 dark:bg-green-900">
+                                <svg class="w-6 h-6 text-green-600 dark:text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Completed</p>
+                                <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $completedProjects }}</p>
+                                <p class="text-xs mt-1 flex items-center">
+                                    @if($completedTrend > 0)
+                                        <span class="text-green-600 dark:text-green-400">&#9650; {{ $completedTrend }}%</span>
+                                    @elseif($completedTrend < 0)
+                                        <span class="text-red-600 dark:text-red-400">&#9660; {{ abs($completedTrend) }}%</span>
+                                    @else
+                                        <span class="text-gray-500 dark:text-gray-400">0%</span>
+                                    @endif
+                                    <span class="ml-1 text-gray-400">vs last week</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deferred Card -->
+                <div id="deferred-card" class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
+                    <div class="p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-red-100 dark:bg-red-900">
+                                <svg class="w-6 h-6 text-red-600 dark:text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Deferred</p>
+                                <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $deferredProjects }}</p>
+                                <p class="text-xs mt-1 flex items-center">
+                                    @if($deferredTrend > 0)
+                                        <span class="text-green-600 dark:text-green-400">&#9650; {{ $deferredTrend }}%</span>
+                                    @elseif($deferredTrend < 0)
+                                        <span class="text-red-600 dark:text-red-400">&#9660; {{ abs($deferredTrend) }}%</span>
+                                    @else
+                                        <span class="text-gray-500 dark:text-gray-400">0%</span>
+                                    @endif
+                                    <span class="ml-1 text-gray-400">vs last week</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Project Status -->
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-10">
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Project Status</h3>
+                            <div class="flex space-x-2">
+                                <select id="projectStatusTimeFilter" class="text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                                    <option value="all">All Time</option>
+                                    <option value="week">This Week</option>
+                                    <option value="month">This Month</option>
+                                    <option value="year">This Year</option>
+                                </select>
+                                <select id="projectStatusChartType" class="text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                                    <option value="pie">Pie</option>
+                                    <option value="bar">Bar</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="h-72">
+                            <canvas id="projectStatusChart"></canvas>
+                        </div>
+                        <div class="mt-12 grid grid-cols-3 gap-6">
+                            <div class="text-center">
+                                <p class="text-sm text-gray-500 dark:text-gray-400">In Progress</p>
+                                <p class="text-lg font-semibold text-yellow-600 dark:text-yellow-400">{{ $inProgressProjects }}</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ round(($inProgressProjects / $totalProjects) * 100, 1) }}%</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Completed</p>
+                                <p class="text-lg font-semibold text-green-600 dark:text-green-400">{{ $completedProjects }}</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ round(($completedProjects / $totalProjects) * 100, 1) }}%</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Deferred</p>
+                                <p class="text-lg font-semibold text-red-600 dark:text-red-400">{{ $deferredProjects }}</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ round(($deferredProjects / $totalProjects) * 100, 1) }}%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project Type Distribution -->
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Project Types</h3>
+                            <div class="flex space-x-2">
+                                <select id="projectTypeTimeFilter" class="text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                                    <option value="all">All Time</option>
+                                    <option value="week">This Week</option>
+                                    <option value="month">This Month</option>
+                                    <option value="year">This Year</option>
+                                </select>
+                                <select id="projectTypeChartType" class="text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                                    <option value="bar">Bar</option>
+                                    <option value="line">Line</option>
+                                    <option value="pie">Pie</option>
+                                    <option value="radar">Radar</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="projectTypeChartContainer" class="h-64">
+                            <canvas id="projectTypeChart"></canvas>
+                        </div>
+                        <div class="mt-4">
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                    <thead>
+                                        <tr>
+                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Type</th>
+                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Count</th>
+                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Percentage</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                        @forelse($projectTypes as $type => $count)
+                                        <tr>
+                                            <td class="px-4 py-2 text-sm text-gray-900 dark:text-white">{{ $type }}</td>
+                                            <td class="px-4 py-2 text-sm text-gray-900 dark:text-white">{{ $count }}</td>
+                                            <td class="px-4 py-2 text-sm text-gray-900 dark:text-white">{{ $totalProjects > 0 ? round(($count / $totalProjects) * 100, 1) : 0 }}%</td>
+                                        </tr>
+                                        @empty
+                                        <tr>
+                                            <td colspan="3" class="px-4 py-2 text-center text-gray-500 dark:text-gray-400">No Project Types</td>
+                                        </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Task Priority Distribution -->
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="flex items-center space-x-4">
+                                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Task Priorities</h3>
+                                <select id="taskPriorityProject" class="text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                                    <option value="all">All Projects</option>
+                                    @foreach($projectTaskData as $projectId => $data)
+                                        <option value="{{ $projectId }}">{{ $data['name'] }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <select id="taskPriorityChartType" class="text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                                <option value="pie">Pie</option>
+                                <option value="doughnut">Doughnut</option>
+                            </select>
+                        </div>
+                        <div class="h-64">
+                            <canvas id="taskPriorityChart"></canvas>
+                        </div>
+                        <div class="mt-4">
+                            <div class="grid grid-cols-3 gap-4">
+                                <div class="text-center">
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">High Priority</p>
+                                    <p class="text-lg font-semibold text-red-600 dark:text-red-400" id="highPriorityCount">0</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400" id="highPriorityPercent">0%</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Normal Priority</p>
+                                    <p class="text-lg font-semibold text-yellow-600 dark:text-yellow-400" id="normalPriorityCount">0</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400" id="normalPriorityPercent">0%</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Low Priority</p>
+                                    <p class="text-lg font-semibold text-green-600 dark:text-green-400" id="lowPriorityCount">0</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400" id="lowPriorityPercent">0%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Task Status Distribution -->
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="flex items-center space-x-4">
+                                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Task Status</h3>
+                                <select id="taskStatusProject" class="text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                                    <option value="all">All Projects</option>
+                                    @foreach($projectTaskData as $projectId => $data)
+                                        <option value="{{ $projectId }}">{{ $data['name'] }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <select id="taskStatusChartType" class="text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                                <option value="stackedColumn">Stacked Column</option>
+                                <option value="bar">Bar</option>
+                                <option value="pie">Pie</option>
+                            </select>
+                        </div>
+                        <div class="h-64">
+                            <canvas id="taskStatusChart"></canvas>
+                        </div>
+                        <div class="mt-4">
+                            <div class="grid grid-cols-4 gap-4">
+                                <div class="text-center">
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Completed</p>
+                                    <p class="text-lg font-semibold text-green-600 dark:text-green-400" id="completedStatusCount">0</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400" id="completedStatusPercent">0%</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">For Checking</p>
+                                    <p class="text-lg font-semibold text-yellow-600 dark:text-yellow-400" id="checkingStatusCount">0</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400" id="checkingStatusPercent">0%</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">For Revision</p>
+                                    <p class="text-lg font-semibold text-red-600 dark:text-red-400" id="revisionStatusCount">0</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400" id="revisionStatusPercent">0%</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Deferred</p>
+                                    <p class="text-lg font-semibold text-gray-600 dark:text-gray-400" id="deferredStatusCount">0</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400" id="deferredStatusPercent">0%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Historical Task Priority Trends -->
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mt-6">
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Task Priority Trends</h3>
+                        </div>
+                        <div class="h-64">
+                            <canvas id="taskPriorityHistoryChart"
+                                aria-label="Task Priority Trends Over Time"
+                                role="img"
+                                tabindex="0"
+                                style="outline:none"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <!-- Historical Task Status Trends -->
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mt-6">
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Task Status Trends</h3>
+                        </div>
+                        <div class="h-64">
+                            <canvas id="taskStatusHistoryChart"
+                                aria-label="Task Status Trends Over Time"
+                                role="img"
+                                tabindex="0"
+                                style="outline:none"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Budget Overview -->
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-8">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white">Budget Overview</h3>
+                        <div class="flex items-center space-x-4">
+                            <select id="budgetTimeFilter" class="text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                                <option value="yearly">Yearly</option>
+                            </select>
+                            <div class="flex space-x-2">
+                                <button id="prevChart" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                    </svg>
+                                </button>
+                                <button id="nextChart" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
+                            <p class="text-sm font-medium text-blue-600 dark:text-blue-300">Total Project Budget</p>
+                            <p class="text-2xl font-semibold text-blue-700 dark:text-blue-200">{{ $totalBudget > 0 ? '₱' . number_format($totalBudget, 2) : 'No Budget' }}</p>
+                        </div>
+                        <div class="bg-green-50 dark:bg-green-900 p-4 rounded-lg">
+                            <p class="text-sm font-medium text-green-600 dark:text-green-300">Completed Project Budget</p>
+                            <p class="text-2xl font-semibold text-green-700 dark:text-green-200">{{ $completedBudget > 0 ? '₱' . number_format($completedBudget, 2) : 'No Completed Budget' }}</p>
+                        </div>
+                        <div class="bg-yellow-50 dark:bg-yellow-900 p-4 rounded-lg">
+                            <p class="text-sm font-medium text-yellow-600 dark:text-yellow-300">Ongoing Project Budget</p>
+                            <p class="text-2xl font-semibold text-yellow-700 dark:text-yellow-200">{{ $remainingBudget > 0 ? '₱' . number_format($remainingBudget, 2) : 'No Ongoing Budget' }}</p>
+                        </div>
+                    </div>
+
+                    <div class="relative overflow-hidden">
+                        <div class="flex transition-transform duration-300 ease-in-out" id="budgetChartsContainer">
+                            <!-- Cumulative Budget Chart -->
+                            <div class="w-full flex-shrink-0">
+                                <div class="h-64">
+                                    <p class="text-center text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2">Cumulative Budget</p>
+                                    <canvas id="cumulativeBudgetChart"></canvas>
+                                </div>
+                                <div class="mt-4 grid grid-cols-3 gap-4">
+                                    <div class="text-center">
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Average Daily Budget</p>
+                                        <p class="text-lg font-semibold text-blue-600 dark:text-blue-400" id="avgDailyBudget">₱0.00</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Highest Daily Budget</p>
+                                        <p class="text-lg font-semibold text-green-600 dark:text-green-400" id="highestDailyBudget">₱0.00</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Lowest Daily Budget</p>
+                                        <p class="text-lg font-semibold text-yellow-600 dark:text-yellow-400" id="lowestDailyBudget">₱0.00</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Comparative Budget Chart -->
+                            <div class="w-full flex-shrink-0">
+                                <div class="h-64">
+                                    <p class="text-center text-sm font-semibold text-green-700 dark:text-green-300 mb-2">Comparative Budget (Planned vs Actual)</p>
+                                    <canvas id="comparativeBudgetChart"></canvas>
+                                </div>
+                                <div class="mt-4 grid grid-cols-2 gap-4">
+                                    <div class="text-center">
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Budget vs Actual</p>
+                                        <p class="text-lg font-semibold text-blue-600 dark:text-blue-400" id="budgetVsActual">0%</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Completion Rate</p>
+                                        <p class="text-lg font-semibold text-green-600 dark:text-green-400" id="completionRate">0%</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Time Series Budget Chart -->
+                            <div class="w-full flex-shrink-0">
+                                <div class="h-64">
+                                    <p class="text-center text-sm font-semibold text-yellow-700 dark:text-yellow-300 mb-2">Time Series Budget & Forecast</p>
+                                    <canvas id="timeSeriesBudgetChart"></canvas>
+                                </div>
+                                <div class="mt-4 grid grid-cols-2 gap-4">
+                                    <div class="text-center">
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Budget Trend</p>
+                                        <p class="text-lg font-semibold text-blue-600 dark:text-blue-400" id="budgetTrend">0%</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Forecast Accuracy</p>
+                                        <p class="text-lg font-semibold text-green-600 dark:text-green-400" id="forecastAccuracy">0%</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activities and Upcoming Deadlines -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Recent Activities -->
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
+                    <div class="p-6">
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Recent Activities</h3>
+                        <div class="space-y-4">
+                            @forelse($recentActivities as $activity)
+                            <div class="flex items-start space-x-3">
+                                <div class="flex-shrink-0">
+                                    <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-900 dark:text-white">{!! $activity->getFormattedMessage() !!}</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ $activity->created_at->diffForHumans() }}</p>
+                                </div>
+                            </div>
+                             @empty
+                            <div class="text-center text-gray-500 dark:text-gray-400">No recent activities.</div>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Deadlines -->
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
+                    <div class="p-6">
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Upcoming Deadlines</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                <thead class="bg-gray-50 dark:bg-gray-700">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Project</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Task</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Deadline</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Priority</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                    @forelse($upcomingDeadlines as $task)
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $task->proj_name }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $task->task_name }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ \Carbon\Carbon::parse($task->due_date)->format('M d, Y') }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                                {{ $task->status === 'For Checking' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' : 
+                                                   ($task->status === 'Completed' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 
+                                                   'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300') }}">
+                                                {{ $task->status }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                                {{ $task->priority === 'High' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' : 
+                                                   ($task->priority === 'Normal' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' : 
+                                                   'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300') }}">
+                                                {{ $task->priority }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="5" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">No upcoming deadlines.</td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Task Assignment Breakdown -->
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mt-6">
+                    <div class="p-6">
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Task Assignment Breakdown</h3>
+                        <div class="h-64">
+                            <canvas id="userAssignmentChart"
+                                aria-label="Task Assignment Breakdown by User"
+                                role="img"
+                                tabindex="0"
+                                style="outline:none"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    window.dashboardData = {
+        inProgressProjects: {{ $inProgressProjects }},
+        completedProjects: {{ $completedProjects }},
+        deferredProjects: {{ $deferredProjects }},
+        totalProjects: {{ $totalProjects }},
+        projectTypes: {!! json_encode($projectTypes) !!},
+        projectTaskData: {!! json_encode($projectTaskData) !!},
+        cumulativeBudget: {!! json_encode($cumulativeBudget) !!},
+        cumulativeCompletedBudget: {!! json_encode($cumulativeCompletedBudget ?? []) !!},
+        cumulativeOngoingBudget: {!! json_encode($cumulativeOngoingBudget ?? []) !!},
+        plannedBudget: {!! json_encode($plannedBudget ?? []) !!},
+        actualBudget: {!! json_encode($actualBudget ?? []) !!},
+        forecastBudget: {!! json_encode($forecastBudget ?? []) !!},
+        totalBudget: {{ $totalBudget }},
+        allProjects: {!! $allProjects->toJson() !!},
+        priorityHistory: {!! json_encode($priorityHistory) !!},
+        statusHistory: {!! json_encode($statusHistory) !!},
+        userAssignment: {!! json_encode($userAssignment) !!},
+    };
+</script>
+</x-app-layout>
+
