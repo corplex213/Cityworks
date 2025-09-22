@@ -1,6 +1,26 @@
 function saveTask(tableWrapper) {
     const table = tableWrapper.querySelector('table');
     const rows = table.querySelectorAll('tbody tr:not(.subtask-row)');
+    const allRows = table.querySelectorAll('tbody tr');
+    // --- Orphan subtask check ---
+    let orphanSubtaskFound = false;
+    allRows.forEach((row, idx) => {
+        if (row.classList.contains('subtask-row')) {
+            // Find the previous non-subtask row (main task)
+            let prev = row.previousElementSibling;
+            while (prev && prev.classList.contains('subtask-row')) {
+                prev = prev.previousElementSibling;
+            }
+            // If no main task row or main task name is empty
+            if (!prev || !prev.querySelector('td:first-child input') || !prev.querySelector('td:first-child input').value.trim()) {
+                orphanSubtaskFound = true;
+            }
+        }
+    });
+    if (orphanSubtaskFound) {
+        alert('You cannot save a subtask without a main task. Please enter a main task for all subtasks.');
+        return;
+    }
     const projectId = window.PROJECT_ID;
     const assignedTo = tableWrapper.getAttribute('data-user-id');
     let hasChanges = false;
@@ -15,7 +35,7 @@ function saveTask(tableWrapper) {
         const dueDateInput = row.querySelector('td:nth-child(3) input');
         const priorityElement = row.querySelector('.priority-value');
         const statusElement = row.querySelector('.status-value');
-        const budgetInput = row.querySelector('td:nth-child(6) input');
+        const budgetInput = projectType === 'POW' ? row.querySelector('td:nth-child(6) input') : null;
 
         let sourceOfFunding = null;
         let otherFundingSource = null;
@@ -26,7 +46,7 @@ function saveTask(tableWrapper) {
             otherFundingSource = otherInput ? otherInput.value : null;
         }
 
-        if (!taskNameInput || !startDateInput || !dueDateInput || !priorityElement || !statusElement || !budgetInput) {
+        if (!taskNameInput || !startDateInput || !dueDateInput || !priorityElement || !statusElement || (projectType === 'POW' && !budgetInput)) {
             console.error('Missing required elements in row:', row);
             return;
         }
@@ -45,7 +65,9 @@ function saveTask(tableWrapper) {
             return;
         }
 
-        const budgetValue = parseFloat(budgetInput.value.replace(/[^0-9.]/g, '')) || 0;
+        const budgetValue = projectType === 'POW'
+            ? (parseFloat(budgetInput.value.replace(/[^0-9.]/g, '')) || 0)
+            : null;
 
         // Detect changes for main task
         let isRowChanged = false;
@@ -55,7 +77,7 @@ function saveTask(tableWrapper) {
             dueDateInput.value !== (dueDateInput.getAttribute('data-old-value') || '') ||
             priorityElement.textContent !== (priorityElement.getAttribute('data-old-value') || '') ||
             statusElement.textContent !== (statusElement.getAttribute('data-old-value') || '') ||
-            budgetValue !== Number(budgetInput.getAttribute('data-old-value') || 0)
+            (projectType === 'POW' && budgetValue !== Number(budgetInput.getAttribute('data-old-value') || 0))
         ) {
             isRowChanged = true;
         }
@@ -88,9 +110,16 @@ function saveTask(tableWrapper) {
             const subtaskDueDateInput = nextRow.querySelector('td:nth-child(3) input');
             const subtaskPriorityElement = nextRow.querySelector('.priority-value');
             const subtaskStatusElement = nextRow.querySelector('.status-value');
-            const subtaskBudgetInput = nextRow.querySelector('td:nth-child(6) input');
+            const subtaskBudgetInput = projectType === 'POW' ? nextRow.querySelector('td:nth-child(6) input') : null;
 
-            if (!subtaskNameInput || !subtaskStartDateInput || !subtaskDueDateInput || !subtaskPriorityElement || !subtaskStatusElement || !subtaskBudgetInput) {
+            if (
+                !subtaskNameInput ||
+                !subtaskStartDateInput ||
+                !subtaskDueDateInput ||
+                !subtaskPriorityElement ||
+                !subtaskStatusElement ||
+                (projectType === 'POW' && !subtaskBudgetInput)
+            ) {
                 console.error('Missing required elements in subtask row:', nextRow);
                 nextRow = nextRow.nextElementSibling;
                 continue;
@@ -112,7 +141,9 @@ function saveTask(tableWrapper) {
                 continue;
             }
 
-            const subtaskBudgetValue = parseFloat(subtaskBudgetInput.value.replace(/[^0-9.]/g, '')) || 0;
+            const subtaskBudgetValue = projectType === 'POW'
+                ? (parseFloat(subtaskBudgetInput.value.replace(/[^0-9.]/g, '')) || 0)
+                : null;
 
             // Detect changes for subtask
             let isSubtaskChanged = false;
@@ -122,7 +153,7 @@ function saveTask(tableWrapper) {
                 subtaskDueDateInput.value !== (subtaskDueDateInput.getAttribute('data-old-value') || '') ||
                 subtaskPriorityElement.textContent !== (subtaskPriorityElement.getAttribute('data-old-value') || '') ||
                 subtaskStatusElement.textContent !== (subtaskStatusElement.getAttribute('data-old-value') || '') ||
-                subtaskBudgetValue !== Number(subtaskBudgetInput.getAttribute('data-old-value') || 0)
+                (projectType === 'POW' && subtaskBudgetInput && subtaskBudgetValue !== Number(subtaskBudgetInput.getAttribute('data-old-value') || 0))
             ) {
                 isSubtaskChanged = true;
             }
@@ -192,7 +223,7 @@ function saveTask(tableWrapper) {
                     hasChanges = true;
                 }
                 
-                if (subtaskBudgetValue !== Number(subtaskBudgetInput.getAttribute('data-old-value') || 0) && 
+                if (subtaskBudgetInput && subtaskBudgetValue !== Number(subtaskBudgetInput.getAttribute('data-old-value') || 0) && 
                     subtaskBudgetInput.getAttribute('data-old-value') !== null) {
                     changes.budget = {
                         old: subtaskBudgetInput.getAttribute('data-old-value') || '0',
@@ -229,7 +260,9 @@ function saveTask(tableWrapper) {
             subtaskDueDateInput.setAttribute('data-old-value', subtaskDueDateInput.value);
             subtaskPriorityElement.setAttribute('data-old-value', subtaskPriorityElement.textContent);
             subtaskStatusElement.setAttribute('data-old-value', subtaskStatusElement.textContent);
-            subtaskBudgetInput.setAttribute('data-old-value', subtaskBudgetValue);
+            if (projectType === 'POW' && subtaskBudgetInput) {
+                subtaskBudgetInput.setAttribute('data-old-value', subtaskBudgetValue);
+            }
             if (projectType === 'POW') {
                 nextRow.setAttribute('data-old-source_of_funding', subtaskSourceOfFunding || '');
                 nextRow.setAttribute('data-old-other_funding_source', subtaskOtherFundingSource || '');
@@ -242,7 +275,7 @@ function saveTask(tableWrapper) {
                 due_date: subtaskDueDateInput.value,
                 priority: subtaskPriorityElement.textContent,
                 status: subtaskStatusElement.textContent,
-                budget: subtaskBudgetValue,
+                budget: projectType === 'POW' ? subtaskBudgetValue : undefined,
                 project_id: projectId,
                 assigned_to: assignedTo,
                 source_of_funding: subtaskSourceOfFunding,
@@ -260,7 +293,9 @@ function saveTask(tableWrapper) {
         dueDateInput.setAttribute('data-old-value', dueDateInput.value);
         priorityElement.setAttribute('data-old-value', priorityElement.textContent);
         statusElement.setAttribute('data-old-value', statusElement.textContent);
-        budgetInput.setAttribute('data-old-value', budgetValue);
+        if (projectType === 'POW' && budgetInput) {
+            budgetInput.setAttribute('data-old-value', budgetValue);
+        }
         if (projectType === 'POW') {
             row.setAttribute('data-old-source_of_funding', sourceOfFunding || '');
             row.setAttribute('data-old-other_funding_source', otherFundingSource || '');
@@ -276,7 +311,7 @@ function saveTask(tableWrapper) {
                     due_date: dueDateInput.value,
                     priority: priorityElement.textContent,
                     status: statusElement.textContent,
-                    budget: budgetValue,
+                    budget: projectType === 'POW' ? budgetValue : undefined,
                     assigned_to: assignedTo,
                     subtasks: subtasks
                 };

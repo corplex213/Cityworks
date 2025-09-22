@@ -37,7 +37,7 @@ const projectType = window.projectType;
         placeholder?.remove();
 
         const tableWrapper = document.createElement('div');
-        tableWrapper.className = 'mt-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden';
+        tableWrapper.className = 'user-table-wrapper mb-12 mt-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden';
         tableWrapper.setAttribute('data-user-id', userId);
         
         // Create the table header
@@ -134,31 +134,17 @@ const projectType = window.projectType;
         const thead = document.createElement('thead');
         thead.className = 'bg-gray-100 dark:bg-gray-700';
         thead.innerHTML = `
-            <tr>
-                <th class="px-6 py-3 text-left text-sm font-medium text-gray-800 dark:text-gray-200 border-r border-gray-300 dark:border-gray-600 min-w-[450px]">
-                    Task
-                </th>
-                <th class="px-6 py-3 text-left text-sm font-medium text-gray-800 dark:text-gray-200 border-r border-gray-300 dark:border-gray-600 min-w-[120px]">
-                    Start Date
-                </th>
-                <th class="px-6 py-3 text-left text-sm font-medium text-gray-800 dark:text-gray-200 border-r border-gray-300 dark:border-gray-600 min-w-[120px]">
-                    Due Date
-                </th>
-                <th class="px-6 py-3 text-left text-sm font-medium text-gray-800 dark:text-gray-200 border-r border-gray-300 dark:border-gray-600 min-w-[220px]">
-                    Priority
-                </th>
-                <th class="px-6 py-3 text-left text-sm font-medium text-gray-800 dark:text-gray-200 border-r border-gray-300 dark:border-gray-600 min-w-[220px]">
-                    Status
-                </th>
-                <th class="px-6 py-3 text-left text-sm font-medium text-gray-800 dark:text-gray-200 border-r border-gray-300 dark:border-gray-600 min-w-[220px]">
-                    Budget
-                </th>
-                ${projectType === 'POW' ? `
-                <th class="px-6 py-3 text-left text-sm font-medium text-gray-800 dark:text-gray-200 border-r border-gray-300 dark:border-gray-600 min-w-[220px]">
-                    Source of Funding
-                </th>
-                ` : ''}
-            </tr>
+        <tr>
+            <th class="px-6 py-3 text-left text-sm font-medium text-gray-800 dark:text-gray-200 border-r border-gray-300 dark:border-gray-600 min-w-[450px]">Task</th>
+            <th class="px-6 py-3 text-left text-sm font-medium text-gray-800 dark:text-gray-200 border-r border-gray-300 dark:border-gray-600 min-w-[120px]">Start Date</th>
+            <th class="px-6 py-3 text-left text-sm font-medium text-gray-800 dark:text-gray-200 border-r border-gray-300 dark:border-gray-600 min-w-[120px]">Due Date</th>
+            <th class="px-6 py-3 text-left text-sm font-medium text-gray-800 dark:text-gray-200 border-r border-gray-300 dark:border-gray-600 min-w-[220px]">Priority</th>
+            <th class="px-6 py-3 text-left text-sm font-medium text-gray-800 dark:text-gray-200 border-r border-gray-300 dark:border-gray-600 min-w-[220px]">Status</th>
+            ${projectType === 'POW' ? `
+                <th class="px-6 py-3 text-left text-sm font-medium text-gray-800 dark:text-gray-200 border-r border-gray-300 dark:border-gray-600 min-w-[220px]">Budget</th>
+                <th class="px-6 py-3 text-left text-sm font-medium text-gray-800 dark:text-gray-200 border-r border-gray-300 dark:border-gray-600 min-w-[220px]">Source of Funding</th>
+            ` : ''}
+        </tr>
         `;
 
         // Create the table body
@@ -167,120 +153,73 @@ const projectType = window.projectType;
 
         // Add existing tasks to the table
         tasks.forEach(task => {
-            const row = document.createElement('tr');
-            row.className = 'hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 cursor-pointer';
-            row.setAttribute('data-task-id', task.id);
-            row.innerHTML = `
-                    <td class="task-column px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-r border-gray-300 dark:border-gray-600 min-w-[450px] cursor-pointer group"
-                        ${task.id ? `onclick="if(!event.target.closest('input') && !event.target.closest('.subtask-btn') && !event.target.closest('.delete-subtask-btn')) openTaskDetails(this.closest('tr'))"` : ''}
-                    >
-                        <div class="flex items-center justify-between">
-                            <input
-                                type="text"
-                                class="w-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg p-2"
-                                value="${task.task_name}">
-                            <div class="flex items-center ml-2">
-                                ${task.subtasks && task.subtasks.length > 0 ? `
-                                    <button class="subtask-toggle-btn mr-2 text-gray-500 hover:text-gray-400 transition-colors duration-150 opacity-0 group-hover:opacity-100"
-                                            onclick="toggleSubtasks(this.closest('tr'), event)"
-                                            title="Toggle Subtasks"
-                                            style="transition: opacity 0.2s;">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transform rotate-180 transition-transform duration-200" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                        </svg>
-                                    </button>
-                                ` : ''}
-                                <button class="subtask-btn text-blue-500 hover:text-blue-700 transition-colors duration-150" onclick="addSubtask(this.closest('tr'))" title="Add Subtask">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                    </td>
-                <td class="px-6 py-4 border-r border-gray-300 dark:border-gray-600">
-                    <input
-                        type="date" 
-                        class="w-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg p-2"
-                        value="${task.start_date}">
-                </td>
-                <td class="px-6 py-4 border-r border-gray-300 dark:border-gray-600">
-                    <input
-                        type="date" 
-                        class="w-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg p-2"
-                        value="${task.due_date}">
-                </td>
-                <td class="px-6 py-4 border-r border-gray-300 dark:border-gray-600">
-                    <div
-                        class="priority-cell w-full ${getColor('priority', task.priority)} text-white rounded-lg p-2 border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none transition font-medium cursor-pointer"
-                        onclick="editPriority(this)">
-                        <span class="priority-value">${task.priority}</span>
+        const row = document.createElement('tr');
+        row.className = 'hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 cursor-pointer';
+        row.setAttribute('data-task-id', task.id);
+
+        let rowHtml = `
+            <td class="task-column px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-r border-gray-300 dark:border-gray-600 min-w-[450px] cursor-pointer group"
+                ${task.id ? `onclick="if(!event.target.closest('input') && !event.target.closest('.subtask-btn') && !event.target.closest('.delete-subtask-btn')) openTaskDetails(this.closest('tr'))"` : ''}>
+                <div class="flex items-center justify-between">
+                    <input type="text" class="w-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg p-2" value="${task.task_name}">
+                    <div class="flex items-center ml-2">
+                        ${task.subtasks && task.subtasks.length > 0 ? `
+                            <button class="subtask-toggle-btn mr-2 text-gray-500 hover:text-gray-400 transition-colors duration-150 opacity-0 group-hover:opacity-100"
+                                    onclick="toggleSubtasks(this.closest('tr'), event)"
+                                    title="Toggle Subtasks"
+                                    style="transition: opacity 0.2s;">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transform rotate-180 transition-transform duration-200" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        ` : ''}
+                        <button class="subtask-btn text-blue-500 hover:text-blue-700 transition-colors duration-150" onclick="addSubtask(this.closest('tr'))" title="Add Subtask">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
                     </div>
-                </td>
-                <td class="px-6 py-4 border-r border-gray-300 dark:border-gray-600">
-                    <div
-                        class="status-cell w-full ${getColor('status', task.status)} text-white rounded-lg p-2 border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none transition cursor-pointer"
-                        onclick="editStatus(this)">
-                        <span class="status-value">${task.status}</span>
-                    </div>
-                </td>
-                <td class="px-6 py-4 border-r border-gray-300 dark:border-gray-600">
-                    <input
-                        type="text"
-                        inputmode="decimal"
-                        placeholder="Enter Budget"
-                        value="${task.budget}"
-                        oninput="updateTotalBudget(this)"
-                        onblur="updateTotalBudget(this)"
-                        class="w-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg p-2"
-                    >
-                </td>
-                ${projectType === 'POW' ? `
-                <td class="px-6 py-4 border-r border-gray-300 dark:border-gray-600">
-                    <select name="source_of_funding"
-                        class="w-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg p-2 border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
-                        onchange="handleSourceOfFundingChange(this)">
-                        <option value="">Select</option>
-                        <option value="DRRM-F">DRRM-F</option>
-                        <option value="LDF">LDF</option>
-                        <option value="NTA">NTA</option>
-                        <option value="For funding">For funding</option>
-                        <option value="Others">Others</option>
-                    </select>
-                    <div class="other-funding-source hidden mt-2">
-                        <input type="text" name="other_funding_source" class="w-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg p-2 p-2 rounded-lg" placeholder="Please specify">
-                    </div>
-                </td>
-                ` : ''}
+                </div>
+            </td>
+            <td class="px-6 py-4 border-r border-gray-300 dark:border-gray-600">
+                <input type="date" class="w-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg p-2" value="${task.start_date}">
+            </td>
+            <td class="px-6 py-4 border-r border-gray-300 dark:border-gray-600">
+                <input type="date" class="w-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg p-2" value="${task.due_date}">
+            </td>
+            <td class="px-6 py-4 border-r border-gray-300 dark:border-gray-600">
+                <div class="priority-cell w-full ${getColor('priority', task.priority)} text-white rounded-lg p-2 border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none transition font-medium cursor-pointer" onclick="editPriority(this)">
+                    <span class="priority-value">${task.priority}</span>
+                </div>
+            </td>
+            <td class="px-6 py-4 border-r border-gray-300 dark:border-gray-600">
+                <div class="status-cell w-full ${getColor('status', task.status)} text-white rounded-lg p-2 border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none transition cursor-pointer" onclick="editStatus(this)">
+                    <span class="status-value">${task.status}</span>
+                </div>
+            </td>
+        `;
+        if (projectType === 'POW') {
+            rowHtml += `
+            <td class="px-6 py-4 border-r border-gray-300 dark:border-gray-600">
+                <input type="text" inputmode="decimal" placeholder="Enter Budget" value="${task.budget}" oninput="updateTotalBudget(this)" onblur="updateTotalBudget(this)" class="w-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg p-2">
+            </td>
+            <td class="px-6 py-4 border-r border-gray-300 dark:border-gray-600">
+                <select name="source_of_funding" class="w-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg p-2 border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none transition" onchange="handleSourceOfFundingChange(this)">
+                    <option value="">Select</option>
+                    <option value="DRRM-F">DRRM-F</option>
+                    <option value="LDF">LDF</option>
+                    <option value="NTA">NTA</option>
+                    <option value="For funding">For funding</option>
+                    <option value="Others">Others</option>
+                </select>
+                <div class="other-funding-source hidden mt-2">
+                    <input type="text" name="other_funding_source" class="w-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg p-2 p-2 rounded-lg" placeholder="Please specify">
+                </div>
+            </td>
             `;
-            if (projectType === 'POW' && task.source_of_funding) {
-                const sourceSelect = row.querySelector('td:nth-child(7) select[name="source_of_funding"]');
-                if (sourceSelect) sourceSelect.value = task.source_of_funding;
-                if (task.source_of_funding === 'Others' && task.other_funding_source) {
-                    const otherDiv = row.querySelector('td:nth-child(7) .other-funding-source');
-                    const sourceSelect = row.querySelector('td:nth-child(7) select[name="source_of_funding"]');
-                    if (otherDiv) {
-                        otherDiv.classList.remove('hidden');
-                        const otherInput = otherDiv.querySelector('input[name="other_funding_source"]');
-                        if (otherInput) {
-                            otherInput.value = task.other_funding_source;
-                            // Add double-click functionality
-                            otherInput.placeholder = "Please specify (double-click to change)";
-                            otherInput.style.cursor = 'pointer';
-                            otherInput.title = 'Double-click to return to dropdown menu';
-                            
-                            otherInput.ondblclick = () => {
-                                sourceSelect.style.display = '';
-                                otherDiv.classList.add('hidden');
-                                sourceSelect.value = '';
-                                sourceSelect.focus();
-                            };
-                        }
-                        if (sourceSelect) sourceSelect.style.display = 'none';
-                    }
-                }
-            }
-            tbody.appendChild(row);
+        }
+        row.innerHTML = rowHtml;
+        tbody.appendChild(row);
             const taskNameInput = row.querySelector('td:first-child input');
             const startDateInput = row.querySelector('td:nth-child(2) input');
             const dueDateInput = row.querySelector('td:nth-child(3) input');
@@ -296,118 +235,115 @@ const projectType = window.projectType;
             if (projectType === 'POW') {
                 const sourceSelect = row.querySelector('td:nth-child(7) select[name="source_of_funding"]');
                 const otherInput = row.querySelector('td:nth-child(7) input[name="other_funding_source"]');
+                // Set the select value from the saved data
+                if (sourceSelect && typeof task.source_of_funding !== 'undefined') {
+                    sourceSelect.value = task.source_of_funding || '';
+                    // If "Others" is selected, show the input
+                    if (task.source_of_funding === 'Others' && otherInput && typeof task.other_funding_source !== 'undefined') {
+                        sourceSelect.style.display = 'none';
+                        const otherDiv = row.querySelector('.other-funding-source');
+                        if (otherDiv) otherDiv.classList.remove('hidden');
+                        otherInput.value = task.other_funding_source || '';
+                        // Attach double-click handler after reload
+                        otherInput.ondblclick = () => {
+                            sourceSelect.style.display = '';
+                            otherDiv.classList.add('hidden');
+                            sourceSelect.value = '';
+                            sourceSelect.focus();
+                        };
+                        // Optional: add a tooltip
+                        otherInput.title = "Double-click to change Source of Funding";
+                    }
+                }
                 row.setAttribute('data-old-source_of_funding', sourceSelect ? sourceSelect.value : '');
                 row.setAttribute('data-old-other_funding_source', otherInput ? otherInput.value : '');
             }
 
             // Add subtasks if they exist
             if (task.subtasks && task.subtasks.length > 0) {
-                task.subtasks.forEach(subtask => {
-                    const subtaskRow = document.createElement('tr');
-                    subtaskRow.className = 'hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 subtask-row hidden';
-                    subtaskRow.setAttribute('data-task-id', subtask.id);
-                    subtaskRow.innerHTML = `
-                        <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-r border-gray-300 dark:border-gray-600 min-w-[450px] cursor-pointer" onclick="if(!event.target.closest('input') && !event.target.closest('.subtask-btn') && !event.target.closest('.delete-subtask-btn')) openTaskDetails(this.closest('tr'))">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center w-full">
-                                    <span class="text-gray-400 mr-2">└─</span>
-                                    <input 
-                                        type="text" 
-                                        class="w-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg p-2" 
-                                        value="${subtask.task_name}"
-                                        data-old-value="${subtask.task_name}"
-                                        placeholder="Enter Subtask">
-                                </div>
+            task.subtasks.forEach(subtask => {
+                const subtaskRow = document.createElement('tr');
+                subtaskRow.className = 'hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 subtask-row hidden';
+                subtaskRow.setAttribute('data-task-id', subtask.id);
+
+                let subtaskHtml = `
+                    <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-r border-gray-300 dark:border-gray-600 min-w-[450px] cursor-pointer" onclick="if(!event.target.closest('input') && !event.target.closest('.subtask-btn') && !event.target.closest('.delete-subtask-btn')) openTaskDetails(this.closest('tr'))">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center w-full">
+                                <span class="text-gray-400 mr-2">└─</span>
+                                <input 
+                                    type="text" 
+                                    class="w-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg p-2" 
+                                    value="${subtask.task_name}"
+                                    data-old-value="${subtask.task_name}"
+                                    placeholder="Enter Subtask">
                             </div>
-                        </td>
-                        <td class="px-6 py-4 border-r border-gray-300 dark:border-gray-600">
-                            <input 
-                                type="date" 
-                                class="w-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg p-2"
-                                value="${subtask.start_date}"
-                                data-old-value="${subtask.start_date}"
-                                onchange="updateOldValue(this)">
-                        </td>
-                        <td class="px-6 py-4 border-r border-gray-300 dark:border-gray-600">
-                            <input
-                                type="date" 
-                                class="w-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg p-2"
-                                value="${subtask.due_date}"
-                                data-old-value="${subtask.due_date}"
-                                onchange="updateOldValue(this)">
-                        </td>
-                        <td class="px-6 py-4 border-r border-gray-300 dark:border-gray-600">
-                            <div
-                                class="priority-cell w-full ${getColor('priority', subtask.priority)} text-white rounded-lg p-2 border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none transition font-medium cursor-pointer"
-                                onclick="editPriority(this)"
-                                data-old-value="${subtask.priority}">
-                                <span class="priority-value">${subtask.priority}</span>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 border-r border-gray-300 dark:border-gray-600">
-                            <div
-                                class="status-cell w-full ${getColor('status', subtask.status)} text-white rounded-lg p-2 border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none transition cursor-pointer"
-                                onclick="editStatus(this)"
-                                data-old-value="${subtask.status}">
-                                <span class="status-value">${subtask.status}</span>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-r border-gray-300 dark:border-gray-600 ">
-                            <input 
-                                type="text"
-                                inputmode="decimal"
-                                placeholder="Enter Budget" 
-                                value="${subtask.budget}"
-                                data-old-value="${subtask.budget}"
-                                oninput="updateTotalBudget(this); updateOldValue(this)" 
-                                class="w-full bg-transparent rounded-lg outline-none text-inherit">
-                        </td>
-                        ${projectType === 'POW' ? `
-                        <td class="px-6 py-4 border-r border-gray-300 dark:border-gray-600">
-                            <select name="source_of_funding"
-                                class="w-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg p-2 border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
-                                onchange="handleSourceOfFundingChange(this)">
-                                <option value="">Select</option>
-                                <option value="DRRM-F">DRRM-F</option>
-                                <option value="LDF">LDF</option>
-                                <option value="NTA">NTA</option>
-                                <option value="For funding">For funding</option>
-                                <option value="Others">Others</option>
-                            </select>
-                            <div class="other-funding-source hidden mt-2">
-                                <input type="text" name="other_funding_source" class="w-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg p-2 p-2 rounded-lg" placeholder="Please specify">
-                            </div>
-                        </td>
-                    ` : ''}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 border-r border-gray-300 dark:border-gray-600">
+                        <input 
+                            type="date" 
+                            class="w-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg p-2"
+                            value="${subtask.start_date}"
+                            data-old-value="${subtask.start_date}"
+                            onchange="updateOldValue(this)">
+                    </td>
+                    <td class="px-6 py-4 border-r border-gray-300 dark:border-gray-600">
+                        <input
+                            type="date" 
+                            class="w-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg p-2"
+                            value="${subtask.due_date}"
+                            data-old-value="${subtask.due_date}"
+                            onchange="updateOldValue(this)">
+                    </td>
+                    <td class="px-6 py-4 border-r border-gray-300 dark:border-gray-600">
+                        <div
+                            class="priority-cell w-full ${getColor('priority', subtask.priority)} text-white rounded-lg p-2 border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none transition font-medium cursor-pointer"
+                            onclick="editPriority(this)"
+                            data-old-value="${subtask.priority}">
+                            <span class="priority-value">${subtask.priority}</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 border-r border-gray-300 dark:border-gray-600">
+                        <div
+                            class="status-cell w-full ${getColor('status', subtask.status)} text-white rounded-lg p-2 border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none transition cursor-pointer"
+                            onclick="editStatus(this)"
+                            data-old-value="${subtask.status}">
+                            <span class="status-value">${subtask.status}</span>
+                        </div>
+                    </td>
+                `;
+                if (projectType === 'POW') {
+                    subtaskHtml += `
+                    <td class="px-6 py-4 border-r border-gray-300 dark:border-gray-600 text-sm text-gray-900 dark:text-gray-200">
+                        <input 
+                            type="text"
+                            inputmode="decimal"
+                            placeholder="Enter Budget" 
+                            value="${subtask.budget}"
+                            data-old-value="${subtask.budget}"
+                            oninput="updateTotalBudget(this); updateOldValue(this)" 
+                            class="w-full bg-transparent rounded-lg outline-none text-inherit">
+                    </td>
+                    <td class="px-6 py-4 border-r border-gray-300 dark:border-gray-600">
+                        <select name="source_of_funding"
+                            class="w-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg p-2 border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
+                            onchange="handleSourceOfFundingChange(this)">
+                            <option value="">Select</option>
+                            <option value="DRRM-F">DRRM-F</option>
+                            <option value="LDF">LDF</option>
+                            <option value="NTA">NTA</option>
+                            <option value="For funding">For funding</option>
+                            <option value="Others">Others</option>
+                        </select>
+                        <div class="other-funding-source hidden mt-2">
+                            <input type="text" name="other_funding_source" class="w-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg p-2 p-2 rounded-lg" placeholder="Please specify">
+                        </div>
+                    </td>
                     `;
-                    if (projectType === 'POW' && subtask.source_of_funding) {
-                        const subtaskSourceSelect = subtaskRow.querySelector('td:nth-child(7) select[name="source_of_funding"]');
-                        if (subtaskSourceSelect) subtaskSourceSelect.value = subtask.source_of_funding;
-                        if (subtask.source_of_funding === 'Others' && subtask.other_funding_source) {
-                        const subtaskOtherDiv = subtaskRow.querySelector('td:nth-child(7) .other-funding-source');
-                        const subtaskSourceSelect = subtaskRow.querySelector('td:nth-child(7) select[name="source_of_funding"]');
-                        if (subtaskOtherDiv) {
-                            subtaskOtherDiv.classList.remove('hidden');
-                            const subtaskOtherInput = subtaskOtherDiv.querySelector('input[name="other_funding_source"]');
-                            if (subtaskOtherInput) {
-                                subtaskOtherInput.value = subtask.other_funding_source;
-                                // Add double-click functionality
-                                subtaskOtherInput.placeholder = "Please specify (double-click to change)";
-                                subtaskOtherInput.style.cursor = 'pointer';
-                                subtaskOtherInput.title = 'Double-click to return to dropdown menu';
-                                
-                                subtaskOtherInput.ondblclick = () => {
-                                    subtaskSourceSelect.style.display = '';
-                                    subtaskOtherDiv.classList.add('hidden');
-                                    subtaskSourceSelect.value = '';
-                                    subtaskSourceSelect.focus();
-                                };
-                            }
-                            if (subtaskSourceSelect) subtaskSourceSelect.style.display = 'none';
-                        }
-                    }
-                    }
-                    tbody.appendChild(subtaskRow);
+                }
+                subtaskRow.innerHTML = subtaskHtml;
+                tbody.appendChild(subtaskRow);
                     const subtaskNameInput = subtaskRow.querySelector('td:first-child input');
                     const subtaskStartDateInput = subtaskRow.querySelector('td:nth-child(2) input');
                     const subtaskDueDateInput = subtaskRow.querySelector('td:nth-child(3) input');
@@ -423,13 +359,32 @@ const projectType = window.projectType;
                     if (projectType === 'POW') {
                         const subtaskSourceSelect = subtaskRow.querySelector('td:nth-child(7) select[name="source_of_funding"]');
                         const subtaskOtherInput = subtaskRow.querySelector('td:nth-child(7) input[name="other_funding_source"]');
+                        // Set the select value from the saved data
+                        if (subtaskSourceSelect && typeof subtask.source_of_funding !== 'undefined') {
+                            subtaskSourceSelect.value = subtask.source_of_funding || '';
+                            if (subtask.source_of_funding === 'Others' && subtaskOtherInput && typeof subtask.other_funding_source !== 'undefined') {
+                                subtaskSourceSelect.style.display = 'none';
+                                const otherDiv = subtaskRow.querySelector('.other-funding-source');
+                                if (otherDiv) otherDiv.classList.remove('hidden');
+                                subtaskOtherInput.value = subtask.other_funding_source || '';
+                                // Attach double-click handler after reload
+                                subtaskOtherInput.ondblclick = () => {
+                                    subtaskSourceSelect.style.display = '';
+                                    otherDiv.classList.add('hidden');
+                                    subtaskSourceSelect.value = '';
+                                    subtaskSourceSelect.focus();
+                                };
+                                // Optional: add a tooltip
+                                subtaskOtherInput.title = "Double-click to change Source of Funding";
+                            }
+                        }
                         subtaskRow.setAttribute('data-old-source_of_funding', subtaskSourceSelect ? subtaskSourceSelect.value : '');
                         subtaskRow.setAttribute('data-old-other_funding_source', subtaskOtherInput ? subtaskOtherInput.value : '');
                     }
                 });
             }
         });
-        const totalColumns = projectType === 'POW' ? 7 : 6;
+        const totalColumns = projectType === 'POW' ? 7 : 5;
             if (window.CAN_CREATE_TASKS) {
                 const addItemRow = document.createElement('tr');
                 addItemRow.className = 'hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 cursor-pointer';
@@ -446,26 +401,27 @@ const projectType = window.projectType;
                 `;
                 tbody.appendChild(addItemRow);
             }
-        const totalBudget = calculateTotalBudget(tasks);
-        // Create the table footer
-        const tfoot = document.createElement('tfoot');
-        const budgetLabelColspan = projectType === 'POW' ? 6 : 5;
-        tfoot.className = 'bg-gray-100 dark:bg-gray-700';
-        tfoot.innerHTML = `
-            <tr>
-                <td colspan="${budgetLabelColspan}" class="px-6 py-4 text-right font-semibold text-gray-800 dark:text-gray-200 border-t border-gray-300 dark:border-gray-600">
-                    Total Budget:
-                </td>
-                <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-t border-gray-300 dark:border-gray-600">
-                    <span class="total-budget font-semibold">₱${totalBudget.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
-                </td>
-            </tr>
-        `;
+        // Only create and append the footer if POW
+        if (projectType === 'POW') {
+            const totalBudget = calculateTotalBudget(tasks);
+            const tfoot = document.createElement('tfoot');
+            tfoot.className = 'bg-gray-100 dark:bg-gray-700';
+            tfoot.innerHTML = `
+                <tr>
+                    <td colspan="6" class="px-6 py-4 text-right font-semibold text-gray-800 dark:text-gray-200 border-t border-gray-300 dark:border-gray-600">
+                        Total Budget:
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-t border-gray-300 dark:border-gray-600">
+                        <span class="total-budget font-semibold">₱${totalBudget.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+                    </td>
+                </tr>
+            `;
+            table.appendChild(tfoot);
+        }
 
-        // Append all elements
         table.appendChild(thead);
         table.appendChild(tbody);
-        table.appendChild(tfoot);
+        
         scrollableContainer.appendChild(table);
         tableWrapper.appendChild(header);
         tableWrapper.appendChild(scrollableContainer);
@@ -542,16 +498,18 @@ const projectType = window.projectType;
                     <span class="status-value">For Checking</span>
                 </div>
             </td>
-            <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-r border-gray-300 dark:border-gray-600 ">
-                <input 
-                    type="text"
-                    inputmode="decimal"
-                    placeholder="Enter Budget" 
-                    oninput="updateTotalBudget(this)" 
-                    onblur="updateTotalBudget(this)"
-                    class="w-full bg-transparent outline-none rounded-lg text-inherit">
-            </td>
-        `;
+            ${projectType === 'POW' ? `
+    <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-r border-gray-300 dark:border-gray-600 ">
+        <input 
+            type="text"
+            inputmode="decimal"
+            placeholder="Enter Budget" 
+            oninput="updateTotalBudget(this)" 
+            onblur="updateTotalBudget(this)"
+            class="w-full bg-transparent outline-none rounded-lg text-inherit">
+    </td>
+    ` : ''}
+`;
 
         // Add Source of Funding column if POW
         if (projectType === 'POW') {
@@ -681,7 +639,7 @@ function addSubtask(parentRow) {
     subtaskRow.className = 'hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 subtask-row';
     
     // Create the subtask row with indentation and similar values
-    subtaskRow.innerHTML = `
+    let subtaskHtml = `
         <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-r border-gray-300 dark:border-gray-600 min-w-[450px] cursor-pointer">
             <div class="flex items-center justify-between">
                 <div class="flex items-center w-full">
@@ -719,6 +677,10 @@ function addSubtask(parentRow) {
                 <span class="status-value">${parentStatus}</span>
             </div>
         </td>
+    `;
+
+    if (projectType === 'POW') {
+        subtaskHtml += `
         <td class="px-6 py-4 border-r border-gray-300 dark:border-gray-600 text-sm text-gray-900 dark:text-gray-200">
             <input 
                 type="text"
@@ -728,7 +690,6 @@ function addSubtask(parentRow) {
                 onblur="updateTotalBudget(this)"
                 class="w-full bg-transparent outline-none rounded-lg text-inherit">
         </td>
-        ${projectType === 'POW' ? `
         <td class="px-6 py-4 border-r border-gray-300 dark:border-gray-600">
             <select name="source_of_funding"
                 class="w-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg p-2 border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
@@ -744,9 +705,9 @@ function addSubtask(parentRow) {
                 <input type="text" name="other_funding_source" class="w-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg p-2 p-2 rounded-lg" placeholder="Please specify">
             </div>
         </td>
-        ` : ''}
-    `;
-
+        `;
+    }
+    subtaskRow.innerHTML = subtaskHtml;
     // Insert the subtask row after the last subtask or after the parent row
     if (insertAfter.nextElementSibling) {
         insertAfter.parentNode.insertBefore(subtaskRow, insertAfter.nextElementSibling);

@@ -23,6 +23,7 @@ export default defineConfig({
                 'resources/js/projects.js',
                 'resources/js/archiveProjects.js',
                 'resources/js/personnel.js',
+                'resources/js/filterTask.js',
             ],
             refresh: true,
         }),

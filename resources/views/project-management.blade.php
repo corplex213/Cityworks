@@ -1,5 +1,5 @@
 <x-app-layout>
-    @vite(['resources/css/project-management.css', 'resources/js/project-table.js', 'resources/js/activityLog.js', 'resources/js/sortingTask.js', 'resources/js/project-managementUI.js', 'resources/js/managementCRUD.js', 'resources/js/taskDrawer.js'])
+    @vite(['resources/css/project-management.css', 'resources/js/project-table.js', 'resources/js/activityLog.js', 'resources/js/sortingTask.js', 'resources/js/project-managementUI.js', 'resources/js/managementCRUD.js', 'resources/js/taskDrawer.js', 'resources/js/filterTask.js'])
     <x-slot name="header">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <script>
@@ -113,6 +113,19 @@
             </div>
         
             <div class="flex space-x-2">
+                <!-- Filter Button -->
+                <div id="filterBtnContainer">
+                    <button 
+                        id="filterBtn" 
+                        class="flex items-center text-gray-300 hover:bg-gray-800 font-semibold py-2 px-4 rounded-lg transition duration-200"                        
+                    >
+                        <!-- Filter Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707l-6.414 6.414A1 1 0 0013 13.414V19a1 1 0 01-1.447.894l-4-2A1 1 0 017 17v-3.586a1 1 0 00-.293-.707L3.293 6.707A1 1 0 013 6V4z" />
+                        </svg>
+                        Filter
+                    </button>
+                </div>
                 <!-- Sort Button -->
                 <div id="sortBtnContainer">
                     <button 
@@ -156,7 +169,12 @@
                     <p class="text-base text-gray-400 dark:text-gray-500">Click the "Assign Task to Engineer" button to create a group.</p>
                 </div>                
                 <div id="dynamicTablesContainer" class="mt-6">
-                    <!-- Dynamic tables will be inserted here -->
+                    @foreach($users as $user)
+                        <div class="user-table-wrapper mb-12" data-user-id="{{ $user->id }}">
+                            <h2>{{ $user->name }}</h2>
+                            <!-- User's task table here -->
+                        </div>
+                    @endforeach
                 </div>
                 <div id="noTasksPlaceholder" class="hidden flex flex-col items-center justify-center h-32 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-lg mt-6">
                     <h3 class="text-xl font-semibold text-gray-500 dark:text-gray-400">No tasks found</h3>
@@ -440,7 +458,7 @@
                                                     <path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clip-rule="evenodd" />
                                                 </svg>
                                             </div>
-                                            <h3 class="text-gray-300 font-medium">Comments</h3>
+                                            <h3 class="text-gray-300 font-medium">Comments (<span id="commentCount">0</span>)</h3>
                                         </div>
                                         
                                         <!-- Comments List with improved design -->
@@ -493,7 +511,7 @@
                                             <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
                                         </svg>
                                     </div>
-                                    <h3 class="text-gray-300 font-medium">Files</h3>
+                                    <h3 class="text-gray-300 font-medium">Files (<span id="fileListCount">0</span>)</h3>
                                 </div>
                                 
                                 <!-- Files List -->
@@ -575,6 +593,48 @@
         <div class="bg-white dark:bg-gray-800 p-0 rounded-xl shadow-2xl w-full max-w-lg transform scale-95 transition-transform duration-500 ease-in-out">
             <div class="px-8 pt-8 pb-2">
                 <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-6">Select a User</h3>
+                <div class="mb-4 relative">
+                    <input
+                        id="userModalSearchInput"
+                        type="text"
+                        placeholder="Search users..."
+                        class="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-2 pl-10 pr-10 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                        oninput="filterUserModalList()"
+                    />
+                    <!-- Search Icon -->
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                        />
+                    </svg>
+                    <!-- Clear Icon -->
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 cursor-pointer hover:text-gray-600"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        onclick="clearUserModalSearchBar()"
+                        id="userModalClearIcon"
+                        style="display: none;"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"
+                        />
+                    </svg>
+                </div>
                 <div class="divide-y divide-gray-200 dark:divide-gray-700">
                     @php
                         $adminPositions = [
@@ -679,6 +739,37 @@
         </div>
     </div>
 
+    <!-- Filter Modal -->
+    <div id="filterModal"
+        class="fixed inset-0 hidden bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 transition-all duration-300 ease-in-out opacity-0 scale-95">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-md p-6 transform transition-all duration-300 ease-in-out scale-95 opacity-0"
+            id="filterModalContent">
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Filter Tasks</h3>
+            <form id="filterForm">
+                <!-- Filter By -->
+                <label for="filterBy" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Filter By</label>
+                <select id="filterBy" class="w-full mt-2 mb-4 p-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-200">
+                    <option value="filterUser">User</option>
+                    <option value="filterStartDate">Start Date</option>
+                    <option value="filterDueDate">Due Date</option>
+                    <option value="filterPriority">Priority</option>
+                    <option value="filterStatus">Status</option>
+                    @if($project->proj_type === 'POW')
+                    <option value="filterBudget">Budget</option>
+                    <option value="filterFunding">Source of Funding</option>
+                    @endif
+                </select>
+                <div id="filterFieldContainer"></div>
+                <!-- Buttons -->
+                <div class="flex justify-end space-x-4 mt-6">
+                    <button type="button" onclick="resetFilters()" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg">Reset</button>
+                    <button type="button" onclick="closeFilterModal()" class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg">Apply</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="footer mt-8 border-t border-gray-300 dark:border-gray-700 pt-4">
         <p class="text-center text-gray-500 dark:text-gray-400">&copy; 2024 City Engineering Office. All rights reserved.</p>
@@ -703,6 +794,7 @@
     window.CAN_DELETE_TASKS = {{ auth()->user()->can('delete tasks') ? 'true' : 'false' }};
     window.CAN_EDIT_TASKS = {{ auth()->user()->can('edit tasks') ? 'true' : 'false' }};
     window.CAN_CREATE_TASKS = {{ auth()->user()->can('create tasks') ? 'true' : 'false' }};
+    window.usersWithTasks = @json($users->map(fn($u) => ['id' => $u->id, 'name' => $u->name])->values());
 </script>
 
 <script>

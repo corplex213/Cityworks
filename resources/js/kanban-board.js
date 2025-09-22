@@ -281,13 +281,13 @@ function createTaskCard(task) {
             <span class="text-xs text-gray-400">Due Date</span>
             <span class="text-sm text-gray-200">${task.due_date ? new Date(task.due_date).toLocaleDateString() : ''}</span>
         </div>
+        ${window.projectType === 'POW' ? `
         <div class="flex justify-between items-center">
             <span class="text-xs text-gray-400">Budget</span>
             <span class="text-sm text-gray-200 budget-value">
                 ₱${getTotalBudget(task).toLocaleString('en-US', {minimumFractionDigits: 2})}
             </span>
         </div>
-        ${window.projectType === 'POW' ? `
         <div class="flex justify-between items-center">
             <span class="text-xs text-gray-400">Source of Funding</span>
             <span class="text-sm text-gray-200">${task.source_of_funding ?? ''}${task.source_of_funding === 'Others' && task.other_funding_source ? ' (' + task.other_funding_source + ')' : ''}</span>
@@ -360,7 +360,9 @@ function createTaskCard(task) {
                 <option value="Normal" selected>Normal</option>
                 <option value="Low">Low</option>
             </select>
+            ${window.projectType === 'POW' ? `
             <input type="text" class="subtask-budget-input w-full p-2 rounded border bg-gray-900 text-white" placeholder="Budget" inputmode="decimal">
+            ` : ''}
             ${window.projectType === 'POW' ? `
             <div>
                 <label class="block text-xs mb-1 text-gray-400">Source of Funding</label>
@@ -394,13 +396,16 @@ function createTaskCard(task) {
         // Cancel handler
         form.querySelector('.cancel-subtask-btn').onclick = function() { form.remove(); };
         // Budget validation
-        form.querySelector('.subtask-budget-input').addEventListener('input', function() {
-            let value = this.value.replace(/[^0-9.]/g, '');
-            const parts = value.split('.');
-            if (parts.length > 2) value = parts[0] + '.' + parts.slice(1).join('');
-            if (parts.length === 2 && parts[1].length > 2) value = parts[0] + '.' + parts[1].substring(0, 2);
-            this.value = value;
-        });
+        const budgetInput = form.querySelector('.subtask-budget-input');
+            if (budgetInput) {
+                budgetInput.addEventListener('input', function() {
+                    let value = this.value.replace(/[^0-9.]/g, '');
+                    const parts = value.split('.');
+                    if (parts.length > 2) value = parts[0] + '.' + parts.slice(1).join('');
+                    if (parts.length === 2 && parts[1].length > 2) value = parts[0] + '.' + parts[1].substring(0, 2);
+                    this.value = value;
+                });
+            }
         // Save handler
         form.onsubmit = function(ev) {
             ev.preventDefault();
@@ -409,11 +414,13 @@ function createTaskCard(task) {
             const startDate = form.querySelector('.subtask-start-date-input').value;
             const dueDate = form.querySelector('.subtask-due-date-input').value;
             const priority = form.querySelector('.subtask-priority-input').value;
-            const budget = form.querySelector('.subtask-budget-input').value.trim();
+            const budget = window.projectType === 'POW'
+                ? form.querySelector('.subtask-budget-input').value.trim()
+                : '0';
 
             // Validate required fields
-            if (!title || !startDate || !dueDate || !priority || !budget) {
-                alert('Please fill in all required subtask fields.');
+            if (!title || !startDate || !dueDate || !priority || (window.projectType === 'POW' && !budget)) {
+                alert('Please fill in all required fields.');
                 return;
             }
             // Validate date logic
@@ -526,7 +533,9 @@ function addKanbanTask(userId, statusKey) {
             <option value="Normal" selected>Normal</option>
             <option value="Low">Low</option>
         </select>
+        ${window.projectType === 'POW' ? `
         <input type="text" class="subtask-budget-input w-full p-2 rounded border bg-gray-900 text-white" placeholder="Budget" inputmode="decimal">
+        ` : ''}
         ${window.projectType === 'POW' ? `
         <div>
             <label class="block text-xs mb-1 text-gray-400">Source of Funding</label>
@@ -556,13 +565,16 @@ function addKanbanTask(userId, statusKey) {
     });
 
     // Budget validation
-    form.querySelector('.subtask-budget-input').addEventListener('input', function() {
-        let value = this.value.replace(/[^0-9.]/g, '');
-        const parts = value.split('.');
-        if (parts.length > 2) value = parts[0] + '.' + parts.slice(1).join('');
-        if (parts.length === 2 && parts[1].length > 2) value = parts[0] + '.' + parts[1].substring(0, 2);
-        this.value = value;
-    });
+    const budgetInput = form.querySelector('.subtask-budget-input');
+        if (budgetInput) {
+            budgetInput.addEventListener('input', function() {
+                let value = this.value.replace(/[^0-9.]/g, '');
+                const parts = value.split('.');
+                if (parts.length > 2) value = parts[0] + '.' + parts.slice(1).join('');
+                if (parts.length === 2 && parts[1].length > 2) value = parts[0] + '.' + parts[1].substring(0, 2);
+                this.value = value;
+            });
+        }
 
     // Source of funding handler for POW
     if (window.projectType === 'POW') {
@@ -593,19 +605,21 @@ function addKanbanTask(userId, statusKey) {
     form.onsubmit = function(ev) {
         ev.preventDefault();
 
-    // Disable Save button and show spinner
-    const saveBtn = form.querySelector('button[type="submit"]');
-    saveBtn.disabled = true;
+        // Disable Save button and show spinner
+        const saveBtn = form.querySelector('button[type="submit"]');
+        saveBtn.disabled = true;
 
         // Get values
         const title = form.querySelector('.subtask-title-input').value.trim();
         const startDate = form.querySelector('.subtask-start-date-input').value;
         const dueDate = form.querySelector('.subtask-due-date-input').value;
         const priority = form.querySelector('.subtask-priority-input').value;
-        const budget = form.querySelector('.subtask-budget-input').value.trim();
+        const budget = window.projectType === 'POW'
+            ? form.querySelector('.subtask-budget-input').value.trim()
+            : '0';
 
         // Validate required fields
-        if (!title || !startDate || !dueDate || !priority || !budget) {
+        if (!title || !startDate || !dueDate || !priority || (window.projectType === 'POW' && !budget)) {
             alert('Please fill in all required fields.');
             return;
         }

@@ -48,7 +48,7 @@
         <main>
             <div class="relative h-screen animate-fadeIn">
                 <div class="absolute inset-0">
-                    <img src="{{ asset('frontend/img/BagCityHall.jpg') }}" 
+                    <img src="{{ asset('frontend/img/CityEng.jpg') }}" 
                          class="w-full h-full object-cover object-center opacity-90" 
                          alt="Baguio City Hall">
                     <div class="absolute inset-0 bg-black bg-opacity-60"></div>

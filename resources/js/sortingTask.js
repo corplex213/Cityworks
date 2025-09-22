@@ -1,11 +1,11 @@
 const priorityOrder = {'High': 1, 'Normal': 2, 'Low': 3};
 const statusOrder = {'For Revision': 1, 'For Checking': 2, 'Completed': 3,'Deferred': 4};
 // Dynamically build columnNames based on project type
-let columnNames = ['Task', 'Start Date', 'Due Date', 'Priority', 'Status', 'Budget'];
+let columnNames = ['Task', 'Start Date', 'Due Date', 'Priority', 'Status'];
 let currentSortColumnIndex = null;
 let currentSortOrder = 'asc';
 if (window.projectType === 'POW') {
-    columnNames.splice(6, 0, 'Source of Funding'); 
+    columnNames.push('Budget', 'Source of Funding');
 }
     
     // Open the sorting modal

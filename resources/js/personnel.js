@@ -1,7 +1,11 @@
 function clearSearchBar() {
     const searchInput = document.getElementById('searchInput');
     searchInput.value = '';
-    window.location.href = window.personnelRoute || '/personnel';
+    // Remove search param from URL without reloading
+    const url = new URL(window.location.href);
+    url.searchParams.delete('search');
+    window.history.replaceState({}, '', url);
+    filterPersonnel();
 }
 
 // Add debounce function to prevent too many searches
@@ -54,40 +58,55 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function filterPersonnel() {
     const searchInput = document.getElementById('searchInput').value.toLowerCase();
-    const personnelCards = document.querySelectorAll('.bg-gray-700.rounded-lg'); // Select all personnel cards
+    const personnelCards = document.querySelectorAll('.rounded-lg.p-6');
     let visibleCount = 0;
 
     personnelCards.forEach((card) => {
-        const name = card.querySelector('.font-semibold.text-gray-200').textContent.toLowerCase();
-        const email = card.querySelector('.text-sm.text-gray-400').textContent.toLowerCase();
-        const position = card.closest('.mb-8').querySelector('.text-md.font-semibold.text-gray-300').textContent.toLowerCase();
-        const tasks = Array.from(card.querySelectorAll('.bg-gray-800 .text-gray-400')).map(el => el.textContent.toLowerCase());
+        // Get the user name from .ml-4 > .font-semibold
+        let name = '';
+        const ml4 = card.querySelector('.ml-4');
+        if (ml4) {
+            const nameEl = ml4.querySelector('.font-semibold');
+            if (nameEl) {
+                name = nameEl.textContent.toLowerCase();
+            }
+        }
 
-        if (
-            name.includes(searchInput) ||
-            email.includes(searchInput) ||
-            position.includes(searchInput) ||
-            tasks.some(task => task.includes(searchInput))
-        ) {
-            card.style.display = ''; // Show the card
-            card.closest('.mb-8').style.display = ''; // Show the position section
+        // Get the email (first .text-sm inside .ml-4)
+        let email = '';
+        if (ml4) {
+            const emailEl = ml4.querySelector('.text-sm');
+            if (emailEl) {
+                email = emailEl.textContent.toLowerCase();
+            }
+        }
+
+        let match = name.includes(searchInput) || email.includes(searchInput);
+
+        if (match) {
+            card.style.display = '';
             visibleCount++;
         } else {
-            card.style.display = 'none'; // Hide the card
+            card.style.display = 'none';
+        }
+    });
 
-            // Check if all cards in this position are hidden
-            const positionSection = card.closest('.mb-8');
-            const visibleCardsInPosition = positionSection.querySelectorAll('.bg-gray-700.rounded-lg[style="display: "]');
-            if (visibleCardsInPosition.length === 0) {
-                positionSection.style.display = 'none'; // Hide the position section
-            }
+    // Show/hide position sections
+    document.querySelectorAll('.mb-8').forEach(section => {
+        const visibleCards = Array.from(section.querySelectorAll('.rounded-lg.p-6')).filter(card => card.style.display !== 'none');
+        section.style.display = visibleCards.length > 0 ? '' : 'none';
+
+        // Update count badge
+        const countBadge = section.querySelector('.text-xs');
+        if (countBadge) {
+            countBadge.textContent = `${visibleCards.length} personnel`;
         }
     });
 
     // Show "No results found" message if no cards are visible
     let noResultsMessage = document.getElementById('noResultsMessage');
     if (!noResultsMessage) {
-        const container = document.getElementById('personnelListContainer'); // <-- updated selector
+        const container = document.getElementById('personnelListContainer');
         if (container) {
             const messageDiv = document.createElement('div');
             messageDiv.id = 'noResultsMessage';
@@ -99,17 +118,7 @@ function filterPersonnel() {
     }
     noResultsMessage.style.display = visibleCount === 0 ? 'block' : 'none';
 
-    // Update counts in position headers
-    document.querySelectorAll('.mb-8').forEach(section => {
-        const visibleCards = section.querySelectorAll('.bg-gray-700.rounded-lg[style="display: "]');
-        const countBadge = section.querySelector('.text-xs.bg-gray-700');
-        if (countBadge) {
-            countBadge.textContent = `${visibleCards.length} personnel`;
-        }
-    });
-
-    // Update total count in stats
-    const totalCount = document.querySelector('.text-2xl.font-bold.text-gray-200');
+    const totalCount = document.querySelector('.text-2xl.font-bold');
     if (totalCount) {
         totalCount.textContent = visibleCount.toString();
     }

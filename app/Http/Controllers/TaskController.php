@@ -12,6 +12,8 @@ use Spatie\Activitylog\Models\Activity;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ProjectAssignedMail;
 use Illuminate\Support\Facades\Log;
+use Spatie\QueryBuilder\QueryBuilder;
+use Spatie\QueryBuilder\AllowedFilter;
 
 
 class TaskController extends Controller
@@ -165,13 +167,30 @@ class TaskController extends Controller
         }
     }
 
-    public function getProjectTasks($projectId)
+    public function getProjectTasks(Request $request, $projectId)
     {
-        $tasks = Task::where('project_id', $projectId)
+        $tasks = QueryBuilder::for(Task::class)
+            ->where('project_id', $projectId)
             ->whereNull('parent_task_id')
-            ->with(['assignedUser', 'subtasks' => function($query) {
-                $query->with('assignedUser');
-            }])
+            ->allowedFilters([
+                AllowedFilter::exact('priority'),
+                AllowedFilter::exact('status'),
+                AllowedFilter::callback('start_date', function ($query, $value) {
+                $query->whereDate('start_date', '>=', $value);
+                }),
+                AllowedFilter::callback('due_date', function ($query, $value) {
+                    $query->whereDate('due_date', '<=', $value);
+                }),
+                AllowedFilter::exact('assigned_to'),
+                AllowedFilter::callback('budget_min', function ($query, $value) {
+                    $query->where('budget', '>=', $value);
+                }),
+                AllowedFilter::callback('budget_max', function ($query, $value) {
+                    $query->where('budget', '<=', $value);
+                }),
+                AllowedFilter::exact('source_of_funding'),
+            ])
+            ->with(['assignedUser', 'subtasks.assignedUser'])
             ->get()
             ->map(function($task) {
                 return [
@@ -209,7 +228,6 @@ class TaskController extends Controller
                 ];
             })
             ->groupBy('assigned_to');
-
         return response()->json($tasks);
     }
 
@@ -812,6 +830,9 @@ class TaskController extends Controller
         $project = Project::findOrFail($projectId);
 
         foreach ($tasks as $taskData) {
+            if (!isset($taskData['budget'])) {
+            $taskData['budget'] = 0;
+        }
             // Remove subtasks from main task data
             $subtasksData = $taskData['subtasks'] ?? [];
             unset($taskData['subtasks']);
@@ -915,6 +936,9 @@ class TaskController extends Controller
             $existingSubtaskIds = $task->subtasks()->pluck('id')->toArray();
             $updatedSubtaskIds = [];
             foreach ($subtasksData as $subtaskData) {
+                if (!isset($subtaskData['budget'])) {
+                    $subtaskData['budget'] = 0;
+                }
                 $subtaskData['project_id'] = $projectId;
                 $subtaskData['parent_task_id'] = $task->id;
                 $subtaskData['assigned_to'] = $task->assigned_to;

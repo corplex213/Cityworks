@@ -159,6 +159,20 @@
                             </x-dropdown-link>
                             @endrole
 
+                            <div x-data="{ light: (localStorage.theme === 'light') }"
+                                x-init="$watch('light', val => { 
+                                    localStorage.theme = val ? 'light' : 'dark'; 
+                                    document.documentElement.classList.toggle('dark', !val); 
+                                })"
+                                class="px-4 py-2 flex items-center justify-between">
+                                <span class="text-sm text-gray-700 dark:text-gray-200">Light</span>
+                                <label class="relative inline-flex items-center cursor-pointer ml-2">
+                                    <input type="checkbox" x-model="light" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 dark:bg-gray-700 rounded-full peer dark:peer-checked:bg-blue-600 transition-all"></div>
+                                    <div class="absolute left-1 top-1 bg-white dark:bg-gray-300 w-4 h-4 rounded-full transition-transform peer-checked:translate-x-5"></div>
+                                </label>
+                            </div>
+
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <x-dropdown-link :href="route('logout')"

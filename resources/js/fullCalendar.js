@@ -566,47 +566,71 @@ document.addEventListener('DOMContentLoaded', function () {
     const deferredChevron = document.getElementById('deferred-chevron');
     const deferredList = document.getElementById('deferred-task-list');
     if (toggleDeferredBtn && deferredList && deferredChevron) {
+        // Start collapsed
+        deferredList.classList.add('hidden');
+        deferredChevron.classList.remove('rotate-90');
+
         toggleDeferredBtn.addEventListener('click', () => {
-            deferredList.classList.toggle('hidden');
-            deferredChevron.classList.toggle('rotate-90');
+            const isHidden = deferredList.classList.toggle('hidden');
+            if (isHidden) {
+                deferredChevron.classList.remove('rotate-90'); // ►
+            } else {
+                deferredChevron.classList.add('rotate-90');    // ▼
+            }
         });
     }
     
-    const toggleBtn = document.getElementById('toggle-completed-tasks');
-    const chevron = document.getElementById('completed-chevron');
-    const completedList = document.getElementById('completed-task-list');
-    if (toggleBtn && completedList && chevron) {
-        // Hide completed by default
-        completedList.classList.add('hidden');
-        chevron.classList.add('rotate-90');
-        
-        toggleBtn.addEventListener('click', () => {
-            completedList.classList.toggle('hidden');
-            chevron.classList.toggle('rotate-90');
-        });
-    }
+    const toggleCompletedBtn = document.getElementById('toggle-completed-tasks');
+        const completedChevron = document.getElementById('completed-chevron');
+        const completedList = document.getElementById('completed-task-list');
+        if (toggleCompletedBtn && completedList && completedChevron) {
+            // Start collapsed
+            completedList.classList.add('hidden');
+            completedChevron.classList.remove('rotate-90');
+
+            toggleCompletedBtn.addEventListener('click', () => {
+                const isHidden = completedList.classList.toggle('hidden');
+                if (isHidden) {
+                    completedChevron.classList.remove('rotate-90'); // ►
+                } else {
+                    completedChevron.classList.add('rotate-90');    // ▼
+                }
+            });
+        }
     
-    const toggleMyTasksBtn = document.getElementById('toggle-my-tasks');
-    const myTasksChevron = document.getElementById('mytasks-chevron');
-    const list = document.getElementById('user-task-list');
-    if (toggleMyTasksBtn && list && myTasksChevron) {
-        toggleMyTasksBtn.addEventListener('click', () => {
-            list.classList.toggle('hidden');
-            myTasksChevron.classList.toggle('rotate-90');
-        });
-    }
+        const toggleMyTasksBtn = document.getElementById('toggle-my-tasks');
+        const myTasksChevron = document.getElementById('mytasks-chevron');
+        const list = document.getElementById('user-task-list');
+        if (toggleMyTasksBtn && list && myTasksChevron) {
+            // Ensure expanded by default
+            list.classList.remove('hidden');
+            myTasksChevron.classList.add('rotate-90');
+
+            toggleMyTasksBtn.addEventListener('click', () => {
+                const isHidden = list.classList.toggle('hidden');
+                if (isHidden) {
+                    myTasksChevron.classList.remove('rotate-90'); // ►
+                } else {
+                    myTasksChevron.classList.add('rotate-90');    // ▼
+                }
+            });
+        }
     
     const toggleMyEventsBtn = document.getElementById('toggle-my-events');
     const myEventsChevron = document.getElementById('myevents-chevron');
     const eventList = document.getElementById('user-event-list');
     if (toggleMyEventsBtn && eventList && myEventsChevron) {
-        // Hide events by default
+        // Start collapsed
         eventList.classList.add('hidden');
-        myEventsChevron.classList.add('rotate-90');
-        
+        myEventsChevron.classList.remove('rotate-90');
+
         toggleMyEventsBtn.addEventListener('click', () => {
-            eventList.classList.toggle('hidden');
-            myEventsChevron.classList.toggle('rotate-90');
+            const isHidden = eventList.classList.toggle('hidden');
+            if (isHidden) {
+                myEventsChevron.classList.remove('rotate-90'); // ►
+            } else {
+                myEventsChevron.classList.add('rotate-90');    // ▼
+            }
         });
     }
 
@@ -706,4 +730,51 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error(err);
         });
     });
+
+    const exportCsvBtn = document.getElementById('export-csv-btn');
+    if (exportCsvBtn) {
+        exportCsvBtn.addEventListener('click', function() {
+            let events = window.calendar ? window.calendar.getEvents() : [];
+
+            if (!events.length) {
+                alert('No events to export.');
+                return;
+            }
+
+            let csvRows = [
+                ['Task/Events', 'Start Date', 'Start Time', 'End Date', 'End Time', 'Description']
+            ];
+
+            events.forEach(event => {
+                let start = event.start ? new Date(event.start) : null;
+                let end = event.end ? new Date(event.end) : start;
+
+                let startDate = start ? start.toLocaleDateString('en-CA') : '';
+                let startTime = start ? start.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '';
+                let endDate = end ? end.toLocaleDateString('en-CA') : '';
+                let endTime = end ? end.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '';
+
+                let summary = event.title || 'Event';
+                let description = event.extendedProps && event.extendedProps.description ? event.extendedProps.description : '';
+
+                csvRows.push([
+                    `"${summary.replace(/"/g, '""')}"`,
+                    startDate,
+                    startTime,
+                    endDate,
+                    endTime,
+                    `"${description.replace(/"/g, '""')}"`
+                ]);
+            });
+
+            let csvContent = csvRows.map(e => e.join(',')).join('\r\n');
+            let blob = new Blob([csvContent], { type: 'text/csv' });
+            let link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'calendar.csv';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+    }
 });

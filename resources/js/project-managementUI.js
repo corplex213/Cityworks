@@ -110,23 +110,23 @@ function closeUserModal() {
 }
 
 function updateUserButtonStates() {
-            document.querySelectorAll('#userList button').forEach(button => {
-                const userId = button.getAttribute('data-user-id');
-                if (selectedUsers.has(userId)) {
-                    button.disabled = true;
-                    button.classList.add('opacity-50', 'cursor-not-allowed');
-                    button.classList.remove('hover:bg-gray-200', 'dark:hover:bg-gray-600');
-                } else {
-                    button.disabled = false;
-                    button.classList.remove('opacity-50', 'cursor-not-allowed');
-                    button.classList.add('hover:bg-gray-200', 'dark:hover:bg-gray-600');
-                }
-            });
+    document.querySelectorAll('.group-user-list button').forEach(button => {
+        const userId = button.getAttribute('data-user-id');
+        if (selectedUsers.has(userId)) {
+            button.disabled = true;
+            button.classList.add('opacity-50', 'cursor-not-allowed');
+            button.classList.remove('hover:bg-gray-200', 'dark:hover:bg-gray-600');
+        } else {
+            button.disabled = false;
+            button.classList.remove('opacity-50', 'cursor-not-allowed');
+            button.classList.add('hover:bg-gray-200', 'dark:hover:bg-gray-600');
         }
+    });
+}
 window.updateUserButtonStates = updateUserButtonStates;
 
 function setupUserSelectionHandlers() {
-    document.querySelectorAll('#userList button').forEach(button => {
+    document.querySelectorAll('.group-user-list button').forEach(button => {
         button.onclick = function () {
             const userId = this.getAttribute('data-user-id');
             const userName = this.textContent.trim();
@@ -144,8 +144,27 @@ function clearSearchBar() {
         const searchInput = document.getElementById('taskSearchInput');
         searchInput.value = ''; 
         filterTasks();
-    }
 
+    }
+function clearUserModalSearchBar() {
+    const input = document.getElementById('userModalSearchInput');
+    input.value = '';
+    filterUserModalList();
+    const clearIcon = document.getElementById('userModalClearIcon');
+    if (clearIcon) clearIcon.style.display = 'none';
+}
+
+function filterUserModalList() {
+    const input = document.getElementById('userModalSearchInput');
+    const filter = input.value.toLowerCase();
+    document.querySelectorAll('#userSelectionModal .group-user-list li').forEach(li => {
+        const text = li.textContent.toLowerCase();
+        li.style.display = text.includes(filter) ? '' : 'none';
+    });
+    // Show/hide clear icon
+    const clearIcon = document.getElementById('userModalClearIcon');
+    if (clearIcon) clearIcon.style.display = input.value ? '' : 'none';
+}
 function filterTasks() {
         const searchInput = document.getElementById('taskSearchInput').value.toLowerCase();
         const tables = document.querySelectorAll('#dynamicTablesContainer > div');
@@ -214,6 +233,14 @@ function filterTasks() {
         };
 // Load existing tasks when the page loads
 document.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById('userModalSearchInput');
+    const clearIcon = document.getElementById('userModalClearIcon');
+    if (input && clearIcon) {
+        input.addEventListener('input', function() {
+            clearIcon.style.display = input.value ? '' : 'none';
+        });
+        clearIcon.style.display = input.value ? '' : 'none';
+    }
     if (window.showGlobalLoading) {
         window.showGlobalLoading();
     }
@@ -362,3 +389,5 @@ window.clearSearchBar = clearSearchBar;
 window.filterTasks = filterTasks;
 window.getColor = getColor;
 window.updateUserButtonStates = updateUserButtonStates;
+window.clearUserModalSearchBar = clearUserModalSearchBar;
+window.filterUserModalList = filterUserModalList;

@@ -16,16 +16,35 @@
                                 </div>
                             @endif
                             <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center">
-                                    <i class="fas fa-user-clock mr-2 text-gray-400"></i>
-                                    Pending User Approvals
-                                </h3>
+                            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center">
+                                <i class="fas fa-user-clock mr-2 text-gray-400"></i>
+                                Pending User Approvals
+                            </h3>
+                            <div class="flex items-center gap-2 ml-auto">
+                                <div class="relative w-full max-w-xs ml-auto">
+                                    <input
+                                        id="pendingUserSearch"
+                                        type="text"
+                                        placeholder="Search pending users..."
+                                        class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 p-2 pl-10 pr-10 rounded-lg shadow focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                    >
+                                    <!-- Search Icon -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-3 h-5 w-5 text-gray-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                    </svg>
+                                    <!-- Clear Icon -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="absolute right-3 top-3 h-5 w-5 text-gray-400 cursor-pointer hover:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                        onclick="document.getElementById('pendingUserSearch').value=''; document.getElementById('pendingUserSearch').dispatchEvent(new Event('input'));">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </div>
                                 <button type="button"
                                     class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow"
                                     onclick="openRegisterModal()">
                                     + Register New User
                                 </button>
                             </div>
+                        </div>
                             <div class="overflow-x-auto">
                                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                         <thead>
@@ -65,6 +84,11 @@
                                                     </td>
                                                 </tr>
                                             @endforelse
+                                            <tr id="pendingUserNoResult" style="display:none;">
+                                                <td colspan="4" class="px-6 py-4 text-center text-gray-400">
+                                                    No results found.
+                                                </td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -74,10 +98,29 @@
             {{-- Users Table --}}
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center mb-4">
-                        <i class="fas fa-users mr-2 text-gray-400"></i>
-                        Users Table
-                    </h3>
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center">
+                            <i class="fas fa-users mr-2 text-gray-400"></i>
+                            Users Table
+                        </h3>
+                        <div class="relative w-full max-w-xs ml-auto">
+                            <input
+                                id="usersTableSearch"
+                                type="text"
+                                placeholder="Search users..."
+                                class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 p-2 pl-10 pr-10 rounded-lg shadow focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            >
+                            <!-- Search Icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-3 h-5 w-5 text-gray-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            <!-- Clear Icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="absolute right-3 top-3 h-5 w-5 text-gray-400 cursor-pointer hover:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                onclick="document.getElementById('usersTableSearch').value=''; document.getElementById('usersTableSearch').dispatchEvent(new Event('input'));">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </div>
+                    </div>
                     @if(session('role_changed'))
                         <div id="roleChangedAlert" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
                             <span class="block sm:inline">
@@ -142,6 +185,11 @@
                                         </td>
                                     </tr>
                                 @endforeach
+                                <tr id="usersTableNoResult" style="display:none;">
+                                    <td colspan="3" class="px-6 py-4 text-center text-gray-400">
+                                        No results found.
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -220,18 +268,18 @@
     <!-- Register New User Modal -->
             <div id="registerModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
                 <div id="registerModalContent"
-                    class="opacity-0 scale-95 transform transition-all duration-300 ease-out bg-gray-800 p-8 rounded-lg w-full max-w-md relative">
+                    class="opacity-0 scale-95 transform transition-all duration-300 ease-out bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 p-8 rounded-lg w-full max-w-md relative">
                     <button
                         type="button"
                         onclick="closeRegisterModal()"
-                        class="absolute top-3 right-3 w-9 h-9 flex items-center justify-center rounded-full bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+                        class="absolute top-3 right-3 w-9 h-9 flex items-center justify-center rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
                         aria-label="Close modal"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
-                    <h2 class="text-xl font-bold text-gray-200 mb-4">Register New User</h2>
+                    <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Register New User</h2>
                     <!-- Your copied form goes here -->
                     <form method="POST" action="{{ route('user-access.register') }}" id="registerForm" novalidate>
                         @csrf
@@ -252,7 +300,7 @@
                         <!-- Position -->
                         <div class="mt-4">
                             <x-input-label for="position" :value="__('Position')" />
-                            <select id="position" name="position" class="custom-select block mt-1 w-full bg-gray-800 text-white border-gray-700 rounded-md shadow-sm" required>
+                            <select id="position" name="position" class="custom-select block mt-1 w-full bg-white text-gray-800 border-gray-300 dark:bg-gray-800 dark:text-white dark:border-gray-700 rounded-md shadow-sm" required>
                                 <option value="" disabled {{ old('position') ? '' : 'selected' }}>{{ __('Select a position') }}</option>
                                 <optgroup label="Administrative Engineer">
                                     <option value="City Engineer" {{ old('position') == 'City Engineer' ? 'selected' : '' }}>{{ __('City Engineer') }}</option>
@@ -325,18 +373,18 @@
     <!-- Edit User Modal -->
     <div id="editUserModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
         <div id="editUserModalContent"
-            class="opacity-0 scale-95 transform transition-all duration-300 ease-out bg-gray-800 p-8 rounded-lg w-full max-w-md relative">
+            class="opacity-0 scale-95 transform transition-all duration-300 ease-out bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 p-8 rounded-lg w-full max-w-md relative">
             <button
                 type="button"
                 onclick="closeEditUserModal()"
-                class="absolute top-3 right-3 w-9 h-9 flex items-center justify-center rounded-full bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+                class="absolute top-3 right-3 w-9 h-9 flex items-center justify-center rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
                 aria-label="Close modal"
             >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
-            <h2 class="text-xl font-bold text-gray-200 mb-4">Edit User</h2>
+            <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Edit User</h2>
             <form id="editUserForm" method="POST">
                 @csrf
                 @method('PUT')
@@ -353,9 +401,9 @@
                     <span class="text-red-500 text-xs hidden" id="editEmailError"></span>
                 </div>
                 <!-- Position -->
-                <div class="mt-4">
+                 <div class="mt-4">
                     <x-input-label for="edit_position" :value="__('Position')" />
-                    <select id="edit_position" name="position" class="custom-select block mt-1 w-full bg-gray-800 text-white border-gray-700 rounded-md shadow-sm" required>
+                    <select id="edit_position" name="position" class="custom-select block mt-1 w-full bg-white text-gray-800 border-gray-300 dark:bg-gray-800 dark:text-white dark:border-gray-700 rounded-md shadow-sm" required>
                         <option value="" disabled>{{ __('Select a position') }}</option>
                         <optgroup label="Administrative Engineer">
                             <option value="City Engineer">{{ __('City Engineer') }}</option>
@@ -395,18 +443,20 @@
 <!-- Assign Role Modal -->
     <div id="assignRoleModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
         <div id="assignRoleModalContent"
-            class="opacity-0 scale-95 transform transition-all duration-300 ease-out bg-gray-800 p-8 rounded-lg w-full max-w-md relative">
+            class="opacity-0 scale-95 transform transition-all duration-300 ease-out bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 p-8 rounded-lg w-full max-w-md relative">
             <button
                 type="button"
                 onclick="closeAssignRoleModal()"
-                class="absolute top-3 right-3 w-9 h-9 flex items-center justify-center rounded-full bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+                class="absolute top-3 right-3 w-9 h-9 flex items-center justify-center rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
                 aria-label="Close modal"
             >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
-            <h2 class="text-xl font-bold text-gray-200 mb-4">Assign Role to <span id="assignRoleUserName"></span></h2>
+            <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">
+                Assign Role to <span id="assignRoleUserName"></span>
+            </h2>
             <div class="mb-4 px-3 py-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 rounded">
                 <strong>Warning:</strong> An <b>Administrative Engineer</b> cannot change their own role.
             </div>
@@ -415,24 +465,27 @@
                 <input type="hidden" name="role" id="selectedRole">
                 <div class="space-y-4">
                     <div>
-                        <label class="block p-4 rounded-lg border border-gray-600 hover:border-indigo-500 cursor-pointer transition" onclick="selectRole('administrative')">
+                        <label class="block p-4 rounded-lg border border-gray-600 hover:border-indigo-500 cursor-pointer transition bg-white dark:bg-gray-800"
+                            onclick="selectRole('administrative')">
                             <input type="radio" name="role_option" value="administrative" class="mr-2" id="role_admin_radio">
-                            <span class="font-semibold text-gray-100">Administrative</span>
-                            <div class="text-gray-400 text-sm mt-1">Full access to user management and permissions.</div>
+                            <span class="font-semibold text-gray-800 dark:text-gray-100">Administrative</span>
+                            <div class="text-gray-500 dark:text-gray-400 text-sm mt-1">Full access to user management and permissions.</div>
                         </label>
                     </div>
                     <div>
-                        <label class="block p-4 rounded-lg border border-gray-600 hover:border-indigo-500 cursor-pointer transition" onclick="selectRole('managerial')">
+                        <label class="block p-4 rounded-lg border border-gray-600 hover:border-indigo-500 cursor-pointer transition bg-white dark:bg-gray-800"
+                            onclick="selectRole('managerial')">
                             <input type="radio" name="role_option" value="managerial" class="mr-2" id="role_manager_radio">
-                            <span class="font-semibold text-gray-100">Managerial</span>
-                            <div class="text-gray-400 text-sm mt-1">Can manage teams and oversee activities.</div>
+                            <span class="font-semibold text-gray-800 dark:text-gray-100">Managerial</span>
+                            <div class="text-gray-500 dark:text-gray-400 text-sm mt-1">Can manage teams and oversee activities.</div>
                         </label>
                     </div>
                     <div>
-                        <label class="block p-4 rounded-lg border border-gray-600 hover:border-indigo-500 cursor-pointer transition" onclick="selectRole('staff')">
+                        <label class="block p-4 rounded-lg border border-gray-600 hover:border-indigo-500 cursor-pointer transition bg-white dark:bg-gray-800"
+                            onclick="selectRole('staff')">
                             <input type="radio" name="role_option" value="staff" class="mr-2" id="role_staff_radio">
-                            <span class="font-semibold text-gray-100">Staff</span>
-                            <div class="text-gray-400 text-sm mt-1">Basic access for regular personnel.</div>
+                            <span class="font-semibold text-gray-800 dark:text-gray-100">Staff</span>
+                            <div class="text-gray-500 dark:text-gray-400 text-sm mt-1">Basic access for regular personnel.</div>
                         </label>
                     </div>
                 </div>
@@ -745,4 +798,36 @@ function closeEditUserModal() {
         modal.classList.add('hidden');
     }, 300);
 }
+
+// Pending User Approvals Search
+document.getElementById('pendingUserSearch').addEventListener('input', function() {
+    let filter = this.value.toLowerCase();
+    let pendingTable = document.querySelectorAll('.bg-white.dark\\:bg-gray-800.overflow-hidden.shadow-sm.sm\\:rounded-lg.mb-8 table')[0];
+    if (!pendingTable) return;
+    let pendingRows = pendingTable.querySelectorAll('tbody tr:not(#pendingUserNoResult)');
+    let found = false;
+    pendingRows.forEach(function(row) {
+        let text = row.textContent.toLowerCase();
+        let show = text.includes(filter);
+        row.style.display = show ? '' : 'none';
+        if (show) found = true;
+    });
+    document.getElementById('pendingUserNoResult').style.display = found ? 'none' : '';
+});
+
+// Users Table Search
+document.getElementById('usersTableSearch').addEventListener('input', function() {
+    let filter = this.value.toLowerCase();
+    let usersTable = document.querySelectorAll('.bg-white.dark\\:bg-gray-800.overflow-hidden.shadow-sm.sm\\:rounded-lg table')[1];
+    if (!usersTable) return;
+    let userRows = usersTable.querySelectorAll('tbody tr:not(#usersTableNoResult)');
+    let found = false;
+    userRows.forEach(function(row) {
+        let text = row.textContent.toLowerCase();
+        let show = text.includes(filter);
+        row.style.display = show ? '' : 'none';
+        if (show) found = true;
+    });
+    document.getElementById('usersTableNoResult').style.display = found ? 'none' : '';
+});
 </script>
