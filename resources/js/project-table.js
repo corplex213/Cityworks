@@ -140,7 +140,7 @@ const projectType = window.projectType;
             <th class="px-6 py-3 text-left text-sm font-medium text-gray-800 dark:text-gray-200 border-r border-gray-300 dark:border-gray-600 min-w-[120px]">Due Date</th>
             <th class="px-6 py-3 text-left text-sm font-medium text-gray-800 dark:text-gray-200 border-r border-gray-300 dark:border-gray-600 min-w-[220px]">Priority</th>
             <th class="px-6 py-3 text-left text-sm font-medium text-gray-800 dark:text-gray-200 border-r border-gray-300 dark:border-gray-600 min-w-[220px]">Status</th>
-            ${(projectType === 'POW' && window.CURRENT_USER_ROLE !== 'Staff') ? `
+            ${(projectType === 'POW') ? `
                 <th class="px-6 py-3 text-left text-sm font-medium text-gray-800 dark:text-gray-200 border-r border-gray-300 dark:border-gray-600 min-w-[220px]">Budget</th>
                 <th class="px-6 py-3 text-left text-sm font-medium text-gray-800 dark:text-gray-200 border-r border-gray-300 dark:border-gray-600 min-w-[220px]">Source of Funding</th>
             ` : ''}
@@ -198,7 +198,7 @@ const projectType = window.projectType;
                 </div>
             </td>
         `;
-        if (projectType === 'POW' && window.CURRENT_USER_ROLE !== 'Staff') {
+        if (projectType === 'POW') {
             rowHtml += `
             <td class="px-6 py-4 border-r border-gray-300 dark:border-gray-600">
                 <input type="text" inputmode="decimal" placeholder="Enter Budget" value="${task.budget}" oninput="updateTotalBudget(this)" onblur="updateTotalBudget(this)" class="w-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg p-2">
@@ -232,7 +232,7 @@ const projectType = window.projectType;
             if (priorityElement) priorityElement.setAttribute('data-old-value', priorityElement.textContent);
             if (statusElement) statusElement.setAttribute('data-old-value', statusElement.textContent);
             if (budgetInput) budgetInput.setAttribute('data-old-value', budgetInput.value);
-            if (projectType === 'POW' && window.CURRENT_USER_ROLE !== 'Staff') {
+            if (projectType === 'POW') {
                 const sourceSelect = row.querySelector('td:nth-child(7) select[name="source_of_funding"]');
                 const otherInput = row.querySelector('td:nth-child(7) input[name="other_funding_source"]');
                 // Set the select value from the saved data
@@ -313,7 +313,7 @@ const projectType = window.projectType;
                         </div>
                     </td>
                 `;
-                if (projectType === 'POW' && window.CURRENT_USER_ROLE !== 'Staff') {
+                if (projectType === 'POW') {
                     subtaskHtml += `
                     <td class="px-6 py-4 border-r border-gray-300 dark:border-gray-600 text-sm text-gray-900 dark:text-gray-200">
                         <input 
@@ -356,7 +356,7 @@ const projectType = window.projectType;
                     if (subtaskPriorityElement) subtaskPriorityElement.setAttribute('data-old-value', subtaskPriorityElement.textContent);
                     if (subtaskStatusElement) subtaskStatusElement.setAttribute('data-old-value', subtaskStatusElement.textContent);
                     if (subtaskBudgetInput) subtaskBudgetInput.setAttribute('data-old-value', subtaskBudgetInput.value);
-                    if (projectType === 'POW' && window.CURRENT_USER_ROLE !== 'Staff') {
+                    if (projectType === 'POW') {
                         const subtaskSourceSelect = subtaskRow.querySelector('td:nth-child(7) select[name="source_of_funding"]');
                         const subtaskOtherInput = subtaskRow.querySelector('td:nth-child(7) input[name="other_funding_source"]');
                         // Set the select value from the saved data
@@ -402,7 +402,7 @@ const projectType = window.projectType;
                 tbody.appendChild(addItemRow);
             }
         // Only create and append the footer if POW
-        if (projectType === 'POW' && window.CURRENT_USER_ROLE !== 'Staff') {
+        if (projectType === 'POW') {
             const totalBudget = calculateTotalBudget(tasks);
             const tfoot = document.createElement('tfoot');
             tfoot.className = 'bg-gray-100 dark:bg-gray-700';
@@ -498,7 +498,7 @@ const projectType = window.projectType;
                     <span class="status-value">For Checking</span>
                 </div>
             </td>
-            ${(projectType === 'POW' && window.CURRENT_USER_ROLE !== 'Staff') ? `
+            ${(projectType === 'POW') ? `
     <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-r border-gray-300 dark:border-gray-600 ">
         <input 
             type="text"
@@ -512,7 +512,7 @@ const projectType = window.projectType;
 `;
 
         // Add Source of Funding column if POW
-        if (projectType === 'POW' && window.CURRENT_USER_ROLE !== 'Staff') {
+        if (projectType === 'POW') {
             rowHtml += `
             <td class="px-6 py-4 border-r border-gray-300 dark:border-gray-600">
                 <select name="source_of_funding"
@@ -546,7 +546,7 @@ const projectType = window.projectType;
         if (priorityElement) priorityElement.setAttribute('data-old-value', priorityElement.textContent);
         if (statusElement) statusElement.setAttribute('data-old-value', statusElement.textContent);
         if (budgetInput) budgetInput.setAttribute('data-old-value', budgetInput.value);
-        if (projectType === 'POW' && window.CURRENT_USER_ROLE !== 'Staff') {
+        if (projectType === 'POW') {
             const sourceSelect = row.querySelector('td:nth-child(7) select[name="source_of_funding"]');
             const otherInput = row.querySelector('td:nth-child(7) input[name="other_funding_source"]');
             row.setAttribute('data-old-source_of_funding', sourceSelect ? sourceSelect.value : '');
@@ -679,7 +679,7 @@ function addSubtask(parentRow) {
         </td>
     `;
 
-    if (projectType === 'POW' && window.CURRENT_USER_ROLE !== 'Staff') {
+    if (projectType === 'POW') {
         subtaskHtml += `
         <td class="px-6 py-4 border-r border-gray-300 dark:border-gray-600 text-sm text-gray-900 dark:text-gray-200">
             <input 
@@ -726,7 +726,7 @@ function addSubtask(parentRow) {
     if (subtaskPriorityElement) subtaskPriorityElement.setAttribute('data-old-value', subtaskPriorityElement.textContent);
     if (subtaskStatusElement) subtaskStatusElement.setAttribute('data-old-value', subtaskStatusElement.textContent);
     if (subtaskBudgetInput) subtaskBudgetInput.setAttribute('data-old-value', subtaskBudgetInput.value);
-    if (projectType === 'POW' && window.CURRENT_USER_ROLE !== 'Staff') {
+    if (projectType === 'POW') {
         const subtaskSourceSelect = subtaskRow.querySelector('td:nth-child(7) select[name="source_of_funding"]');
         const subtaskOtherInput = subtaskRow.querySelector('td:nth-child(7) input[name="other_funding_source"]');
         subtaskRow.setAttribute('data-old-source_of_funding', subtaskSourceSelect ? subtaskSourceSelect.value : '');

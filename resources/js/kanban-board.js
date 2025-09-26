@@ -281,7 +281,7 @@ function createTaskCard(task) {
             <span class="text-xs text-gray-400">Due Date</span>
             <span class="text-sm text-gray-200">${task.due_date ? new Date(task.due_date).toLocaleDateString() : ''}</span>
         </div>
-        ${window.projectType === 'POW' && window.CURRENT_USER_ROLE !== 'Staff' ? `
+        ${window.projectType === 'POW' ? `
         <div class="flex justify-between items-center">
             <span class="text-xs text-gray-400">Budget</span>
             <span class="text-sm text-gray-200 budget-value">
@@ -360,10 +360,10 @@ function createTaskCard(task) {
                 <option value="Normal" selected>Normal</option>
                 <option value="Low">Low</option>
             </select>
-            ${window.projectType === 'POW' && window.CURRENT_USER_ROLE !== 'Staff' ? `
+            ${window.projectType === 'POW' ? `
             <input type="text" class="subtask-budget-input w-full p-2 rounded border bg-gray-900 text-white" placeholder="Budget" inputmode="decimal">
             ` : ''}
-            ${window.projectType === 'POW' && window.CURRENT_USER_ROLE !== 'Staff' ? `
+            ${window.projectType === 'POW' ? `
             <div>
                 <label class="block text-xs mb-1 text-gray-400">Source of Funding</label>
                 <select class="source-of-funding-input w-full p-2 rounded border mb-2 bg-gray-900 text-white">
@@ -536,10 +536,10 @@ function addKanbanTask(userId, statusKey) {
             <option value="Normal" selected>Normal</option>
             <option value="Low">Low</option>
         </select>
-        ${window.projectType === 'POW' && window.CURRENT_USER_ROLE !== 'Staff' ? `
+        ${window.projectType === 'POW' ? `
         <input type="text" class="subtask-budget-input w-full p-2 rounded border bg-gray-900 text-white" placeholder="Budget" inputmode="decimal">
         ` : ''}
-        ${window.projectType === 'POW' && window.CURRENT_USER_ROLE !== 'Staff' ? `
+        ${window.projectType === 'POW' ? `
         <div>
             <label class="block text-xs mb-1 text-gray-400">Source of Funding</label>
             <select class="source-of-funding-input w-full p-2 rounded border mb-2 bg-gray-900 text-white">
@@ -640,7 +640,7 @@ function addKanbanTask(userId, statusKey) {
             budget: budget
         };
         // Only set funding fields if they exist
-        if (window.projectType === 'POW' && window.CURRENT_USER_ROLE !== 'Staff') {
+        if (window.projectType === 'POW') {
             const sourceSelect = form.querySelector('.source-of-funding-input');
             taskData.source_of_funding = sourceSelect ? sourceSelect.value : null;
 

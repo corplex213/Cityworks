@@ -135,21 +135,21 @@ const closeTaskDetailsDrawer = () => taskDrawerHandler.close();
                         <div class="mt-2 flex flex-wrap gap-2">
                             ${comment.attachments.map(att => {
                                 const isImage = /\.(jpg|jpeg|png|gif)$/i.test(att.file_name);
-                                if (isImage) {
-                                    // Images are always viewable
-                                    return `<a href="/storage/${att.file_path}" target="_blank"><img src="/storage/${att.file_path}" alt="${att.file_name}" style="max-height:80px;max-width:120px;border-radius:4px;border:1px solid #ccc;margin-right:8px;" /></a>`;
-                                } else if (!restrictDownload) {
-                                    // Non-images: allow download unless restricted
-                                    return `<a href="/storage/${att.file_path}" target="_blank" class="inline-flex items-center px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-sm text-blue-600 dark:text-blue-400 hover:underline">
-                                        <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.586-6.586a4 4 0 10-5.656-5.656l-6.586 6.586a6 6 0 108.486 8.486l6.586-6.586"></path></svg>
-                                        ${att.file_name}
-                                    </a>`;
-                                } else {
-                                    // Restricted: show file name only, no link
+                                if (restrictDownload) {
+                                    // Staff in POW: show file name only, no link or image
                                     return `<span class="inline-flex items-center px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-sm text-gray-400 cursor-not-allowed">
                                         <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.586-6.586a4 4 0 10-5.656-5.656l-6.586 6.586a6 6 0 108.486 8.486l6.586-6.586"></path></svg>
                                         ${att.file_name}
                                     </span>`;
+                                } else if (isImage) {
+                                    // Non-staff: images are viewable
+                                    return `<a href="/storage/${att.file_path}" target="_blank"><img src="/storage/${att.file_path}" alt="${att.file_name}" style="max-height:80px;max-width:120px;border-radius:4px;border:1px solid #ccc;margin-right:8px;" /></a>`;
+                                } else {
+                                    // Non-staff: allow download
+                                    return `<a href="/storage/${att.file_path}" download="${att.file_name}" class="inline-flex items-center px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                                            <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.586-6.586a4 4 0 10-5.656-5.656l-6.586 6.586a6 6 0 108.486 8.486l6.586-6.586"></path></svg>
+                                            ${att.file_name}
+                                        </a>`;
                                 }
                             }).join('')}
                         </div>
@@ -354,9 +354,7 @@ const closeTaskDetailsDrawer = () => taskDrawerHandler.close();
         // Restrict attachments for STAFF in POW
         const isStaff = (window.CURRENT_USER_ROLE === 'Staff');
         const isPOW = (window.projectType === 'POW');
-        if (!(isStaff && isPOW)) {
-            commentAttachments.forEach(file => formData.append('attachments[]', file));
-        }
+        commentAttachments.forEach(file => formData.append('attachments[]', file));
 
         for (let pair of formData.entries()) {
             console.log(pair[0], pair[1]);
