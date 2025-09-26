@@ -788,6 +788,7 @@
 </x-app-layout>
 <script>
     window.PROJECT_ID = {{ $project->id }};
+    window.CURRENT_USER_ROLE = "{{ ucfirst(auth()->user()->roles->first()->name) }}";
     window.projectType = @json($project->proj_type);
     window.CURRENT_USER_ID = {{ auth()->id() }};
     window.CURRENT_USER_NAME = @json(auth()->user()->name);

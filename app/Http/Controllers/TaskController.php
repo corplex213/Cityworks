@@ -41,7 +41,7 @@ class TaskController extends Controller
     {
         Log::info('TaskController@store called');
         try {
-            $validated = $request->validate([
+            $rules = [
                 'project_id' => 'required|exists:projects,id',
                 'task_name' => 'required|string|max:255',
                 'start_date' => 'required|date',
@@ -64,7 +64,18 @@ class TaskController extends Controller
                 'subtasks.*.source_of_funding' => 'nullable|string|in:DRRM-F,LDF,NTA,For funding,Others',
                 'subtasks.*.other_funding_source' => 'nullable|string|max:255',
                 'task_description' => 'nullable|string',
-            ]);
+            ];
+
+            // Only require budget for non-Staff users
+            if ($request->user() && $request->user()->hasRole('Staff')) {
+                $rules['budget'] = 'nullable|numeric|min:0';
+                $rules['subtasks.*.budget'] = 'nullable|numeric|min:0';
+            } else {
+                $rules['budget'] = 'required|numeric|min:0';
+                $rules['subtasks.*.budget'] = 'required|numeric|min:0';
+            }
+
+            $validated = $request->validate($rules);
 
             $task = Task::create($validated);          
             $task->load('project', 'assignedUser');
@@ -243,7 +254,8 @@ class TaskController extends Controller
                 $task->update($validated);
                 return response()->json(['message' => 'Task description updated', 'task_description' => $task->task_description]);
             }
-            $validated = $request->validate([
+
+            $rules = [
                 'task_name' => 'required|string|max:255',
                 'start_date' => 'required|date',
                 'due_date' => 'required|date|after_or_equal:start_date',
@@ -263,7 +275,18 @@ class TaskController extends Controller
                 'subtasks.*.source_of_funding' => 'nullable|string|in:DRRM-F,LDF,NTA,For funding,Others',
                 'subtasks.*.other_funding_source' => 'nullable|string|max:255',
                 'task_description' => 'nullable|string',
-            ]);
+            ];
+
+            // Only require budget for non-Staff users
+            if ($request->user() && $request->user()->hasRole('Staff')) {
+                $rules['budget'] = 'nullable|numeric|min:0';
+                $rules['subtasks.*.budget'] = 'nullable|numeric|min:0';
+            } else {
+                $rules['budget'] = 'required|numeric|min:0';
+                $rules['subtasks.*.budget'] = 'required|numeric|min:0';
+            }
+
+            $validated = $request->validate($rules);
 
             // Store old values for activity log
             $oldValues = $task->toArray();

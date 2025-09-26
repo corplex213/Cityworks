@@ -187,30 +187,31 @@
                             </div>
                         </div>
                     </div>
-
                     <!-- Upcoming Deadlines -->
                     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg h-full flex flex-col">
-                        <div id = "upcoming-deadlines" class="flex-1 flex flex-col p-8">
+                        <div id="upcoming-deadlines" class="flex-1 flex flex-col p-8 items-center justify-center text-center">
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Upcoming Deadlines</h3>
-                            <div class="flex-1 flex flex-col justify-end">
-                                <div class="overflow-x-auto" style="max-height: 320px; overflow-y: auto;">
-                                    <table class="min-w-[400px] max-w-full divide-y divide-gray-200 dark:divide-gray-700 exportable-table">
+                            <div class="flex-1 flex flex-col justify-center items-center w-full">
+                                <div class="overflow-x-auto w-full flex justify-center" style="max-height: 320px; overflow-y: auto;">
+                                    <table class="min-w-[400px] max-w-full divide-y divide-gray-200 dark:divide-gray-700 exportable-table mx-auto text-center">
                                         <thead class="bg-gray-50 dark:bg-gray-700">
                                             <tr>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Activity</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Task</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Deadline</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Priority</th>
+                                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Activity</th>
+                                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Task</th>
+                                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Deadline</th>
+                                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Priority</th>
                                             </tr>
                                         </thead>
                                         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                             @forelse($upcomingDeadlines as $task)
                                                 <tr>
-                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $task->proj_name }}</td>
-                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $task->task_name }}</td>
-                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ \Carbon\Carbon::parse($task->due_date)->format('M d, Y') }}</td>
-                                                    <td class="px-6 py-4 whitespace-nowrap">
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ $task->proj_name }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ $task->task_name }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-red-700 dark:text-red-300 text-center">
+                                                        {{ \Carbon\Carbon::parse($task->due_date)->format('F d, Y') }}
+                                                    </td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-center">
                                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                                                             {{ $task->status === 'For Checking' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' : 
                                                             ($task->status === 'Completed' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 
@@ -218,7 +219,7 @@
                                                             {{ $task->status }}
                                                         </span>
                                                     </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap">
+                                                    <td class="px-6 py-4 whitespace-nowrap text-center">
                                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                                                             {{ $task->priority === 'High' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' : 
                                                             ($task->priority === 'Normal' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' : 
@@ -245,14 +246,183 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Task Completion Rate and Overdue Task Rate as separate cards -->
+                    <div class="flex flex-col gap-4 h-full">
+                        <!-- Task Completion Rate Card -->
+                        <div id="task-completion" class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg flex-1 flex items-center">
+                            <div class="p-6 flex items-center w-full">
+                                <div class="p-3 rounded-full bg-green-100 dark:bg-green-900">
+                                    <svg class="w-6 h-6 text-green-600 dark:text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4" />
+                                    </svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Task Completion Rate</p>
+                                    <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $completionRate }}%</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Overdue Task Rate Card -->
+                        <div id="overdue-task-rate" class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg flex-1 flex items-center">
+                            <div class="p-6 flex items-center w-full">
+                                <div class="p-3 rounded-full bg-red-100 dark:bg-red-900">
+                                    <svg class="w-6 h-6 text-red-600 dark:text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01" />
+                                    </svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Overdue Task Rate</p>
+                                    <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $overdueRate }}%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
+                {{-- User Progress Bars --}}
+                    @php
+                        $usersWithRates = collect($userTasksByAssignee)->map(function($user) {
+                            $total = $user['total'] ?? 0;
+                            $completed = $user['completed'] ?? 0;
+                            $percent = $total > 0 ? round(($completed / $total) * 100, 1) : 0;
+                            $user['percent'] = $percent;
+                            return $user;
+                        });
+                        $sortedUsers = $usersWithRates->sortByDesc('completed')->values();
+                        $topUsers = $sortedUsers->take(3);
+                        $otherUsers = $sortedUsers->slice(3);
+                    @endphp
+                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-6">
+                        <div class="p-8">
+                            <div class="flex items-center justify-between mb-4">
+                                <h2 class="text-xl font-bold text-gray-900 dark:text-white">User Task Progress</h2>
+                                <div class="flex items-center gap-2">
+                                    <label for="userProgressFilter" class="text-sm font-medium text-gray-700 dark:text-gray-300">Filter by User:</label>
+                                    <select id="userProgressFilter" class="text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                                        <option value="all">All Users</option>
+                                        @foreach($usersWithRates as $user)
+                                            <option value="{{ $user['name'] }}">{{ $user['name'] }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="user-progress-bars">
+                                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+                                    <svg class="w-6 h-6 text-yellow-500 dark:text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 17l-5 3 1.9-5.6L4 10.5l5.7-.4L12 5l2.3 5.1 5.7.4-4.9 3.9L17 20z"/>
+                                    </svg>
+                                    Top 3 Performers
+                                </h3>
+                                <div class="space-y-5 mb-8">
+                                    @foreach($topUsers as $user)
+                                        @php
+                                            $total = $user['total'] ?? 0;
+                                            $completed = $user['completed'] ?? 0;
+                                            $percent = $user['percent'];
+                                            $avatar = $user['avatar'] ?? null;
+                                            $initials = collect(explode(' ', $user['name']))->map(fn($w) => strtoupper(mb_substr($w,0,1)))->join('');
+                                        @endphp
+                                        <div class="rounded-lg bg-gray-800 dark:bg-gray-900/30">
+                                            <div class="flex justify-between items-center mb-1">
+                                                <span class="flex items-center gap-2 font-semibold text-gray-100 dark:text-gray-100">
+                                                    @if($avatar)
+                                                        <img src="{{ $avatar }}" alt="{{ $user['name'] }}" class="w-6 h-6 rounded-full object-cover border border-gray-300 dark:border-gray-700" />
+                                                    @else
+                                                        <span class="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-bold">
+                                                            {{ $initials }}
+                                                        </span>
+                                                    @endif
+                                                    {{ $user['name'] }}
+                                                    <span class="ml-2 px-2 py-0.5 rounded text-xs font-bold bg-green-400 text-white dark:bg-green-500 dark:text-green-900">Top Performer</span>
+                                                </span>
+                                                <span class="text-xs text-gray-300 dark:text-gray-400">{{ $completed }} / {{ $total }} completed ({{ $percent }}%)</span>
+                                            </div>
+                                            <div class="w-full h-6 bg-gray-700 dark:bg-gray-700 rounded-full overflow-hidden">
+                                                <div class="progress-bar h-6 rounded-full flex items-center justify-center"
+                                                    data-percent="{{ $percent }}"
+                                                    style="width:0%; background-color: {{ $percent >= 80 ? '#22c55e' : ($percent >= 50 ? '#facc15' : '#ef4444') }};">
+                                                    <span class="text-xs font-bold text-white drop-shadow" style="width:100%; text-align:center;">
+                                                        {{ $percent }}%
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                                    <svg class="w-6 h-6 text-gray-500 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h8" />
+                                    </svg>
+                                    Other Users
+                                </h3>
+                                <div class="space-y-5">
+                                    @foreach($otherUsers as $user)
+                                        @php
+                                            $total = $user['total'] ?? 0;
+                                            $completed = $user['completed'] ?? 0;
+                                            $percent = $total > 0 ? round(($completed / $total) * 100, 1) : 0;
+                                            $avatar = $user['avatar'] ?? null;
+                                            $initials = collect(explode(' ', $user['name']))->map(fn($w) => strtoupper(mb_substr($w,0,1)))->join('');
+                                        @endphp
+                                        <div>
+                                            <div class="flex justify-between items-center mb-1">
+                                                <span class="flex items-center gap-2 font-semibold text-gray-800 dark:text-gray-100">
+                                                    @if($avatar)
+                                                        <img src="{{ $avatar }}" alt="{{ $user['name'] }}" class="w-6 h-6 rounded-full object-cover border border-gray-300 dark:border-gray-700" />
+                                                    @else
+                                                        <span class="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-bold">
+                                                            {{ $initials }}
+                                                        </span>
+                                                    @endif
+                                                    {{ $user['name'] }}
+                                                </span>
+                                                <span class="text-xs text-gray-500 dark:text-gray-400">
+                                                    {{ $completed }} / {{ $total }} completed ({{ $percent }}%)
+                                                </span>
+                                            </div>
+                                            <div class="w-full h-6 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                                <div class="progress-bar h-6 rounded-full flex items-center justify-center"
+                                                    data-percent="{{ $percent }}"
+                                                    style="width:0%; background-color: {{ $percent >= 80 ? '#22c55e' : ($percent >= 50 ? '#facc15' : '#ef4444') }};">
+                                                    <span class="text-xs font-bold text-white drop-shadow" style="width:100%; text-align:center;">
+                                                        {{ $percent }}%
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                            <div id="user-task-details" class="mt-8 hidden">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Task Details</h3>
+                                <div class="overflow-y-auto" style="max-height: 400px;">
+                                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 rounded-lg bg-white dark:bg-gray-800" id="userTaskTable">
+                                        <thead class="bg-gray-50 dark:bg-gray-700">
+                                            <tr>
+                                                <th class="px-4 py-2 text-left text-xs font-bold text-indigo-700 dark:text-indigo-300 uppercase">Activity</th>
+                                                <th class="px-4 py-2 text-left text-xs font-bold text-blue-700 dark:text-blue-300 uppercase">Task</th>
+                                                <th class="px-4 py-2 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase">Status</th>
+                                                <th class="px-4 py-2 text-left text-xs font-bold text-pink-700 dark:text-pink-300 uppercase">Priority</th>
+                                                <th class="px-4 py-2 text-left text-xs font-bold text-red-700 dark:text-red-300 uppercase">Due Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="userTaskTableBody" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                            <!-- JS will populate rows here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
                     <!-- Task Assignment Breakdown -->
                     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg h-full flex flex-col justify-between">
-                        <div id="task-assignment" class="p-8 h-full flex flex-col justify-between">
+                        <div id="task-assignment" class="p-8 h-full flex flex-col">
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Task Assignment Breakdown</h3>
-                            <div class="flex flex-col h-80">
-                                <!-- Fixed height for chart -->
-                                <div class="flex-shrink-0" style="height: 240px;">
+                            <div class="flex flex-col flex-1 justify-center items-center">
+                                <div class="flex-shrink-0 mb-4" style="height: 240px;">
                                     <canvas id="userAssignmentChart"
                                         aria-label="Task Assignment Breakdown by User"
                                         role="img"
@@ -276,8 +446,7 @@
                                             '#9966ff', '#ffce56', '#4bc0c0', '#ff6384',
                                         ];
                                     @endphp
-                                    <!-- Scrollable legend container -->
-                                    <div class="mt-4 max-h-32 overflow-y-auto pr-2">
+                                    <div class="mt-4 flex flex-col items-center">
                                         @foreach($userAssignment as $i => $user)
                                             <div class="flex items-center space-x-2 mb-2">
                                                 <span class="inline-block w-3 h-3 rounded-full"
@@ -293,56 +462,45 @@
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Charts Section -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-                    <!-- Task Completion & Overdue Rate Cards -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div id="task-completion" class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg h-full flex flex-col justify-between">
-                            <div class="p-8 h-full flex flex-col justify-between">
-                                <div class="flex items-center">
-                                    <div class="p-3 rounded-full bg-green-100 dark:bg-green-900">
-                                        <svg class="w-6 h-6 text-green-600 dark:text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4" />
-                                        </svg>
-                                    </div>
-                                    <div class="ml-4">
-                                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Task Completion Rate</p>
-                                        <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $completionRate }}%</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg h-full flex flex-col justify-between">
-                            <div id="overdue-task-rate" class="p-8 h-full flex flex-col justify-between">
-                                <div class="flex items-center">
-                                    <div class="p-3 rounded-full bg-red-100 dark:bg-red-900">
-                                        <svg class="w-6 h-6 text-red-600 dark:text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01" />
-                                        </svg>
-                                    </div>
-                                    <div class="ml-4">
-                                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Overdue Task Rate</p>
-                                        <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $overdueRate }}%</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Average Time to Complete Tasks Card -->
-                    <div class="bg-white dark:bg-gray-800 mb-4 overflow-hidden shadow-sm rounded-lg h-full flex flex-col justify-between">
+                    <!-- Source of Funding Breakdown Card -->
+                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg h-full flex flex-col justify-between">
                         <div class="p-8 h-full flex flex-col justify-between">
-                            <div id="average-time" class="flex items-center">
-                                <div class="p-3 rounded-full bg-blue-100 dark:bg-blue-900">
-                                    <svg class="w-6 h-6 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
+                            <h3 id="funding-breakdown" class="text-lg font-medium text-gray-900 dark:text-white mb-4">Source of Funding Breakdown</h3>
+                            <div class="h-64">
+                                <canvas id="fundingSourceChart"></canvas>
+                            </div>
+                            <div class="mt-4">
+                                @php $totalFunding = array_sum($fundingSources); @endphp
+                                <div class="mb-2 text-center text-sm text-gray-400 dark:text-gray-300 font-semibold">
+                                    Total Funding Source: {{ $totalFunding }}
                                 </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Avg. Time to Complete Task</p>
-                                    <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $averageTimeHours }} hrs</p>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 exportable-table">
+                                        <thead>
+                                            <tr>
+                                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Source</th>
+                                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Count</th>
+                                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Percentage</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @php $totalFunding = array_sum($fundingSources); @endphp
+                                            @forelse($fundingSources as $source => $count)
+                                            <tr>
+                                                <td class="px-4 py-2 text-sm text-gray-900 dark:text-white">{{ $source ?? 'Unknown' }}</td>
+                                                <td class="px-4 py-2 text-sm text-gray-900 dark:text-white">{{ $count }}</td>
+                                                <td class="px-4 py-2 text-sm text-gray-900 dark:text-white">
+                                                    {{ $totalFunding > 0 ? round(($count / $totalFunding) * 100, 1) : 0 }}%
+                                                </td>
+                                            </tr>
+                                            @empty
+                                            <tr>
+                                                <td colspan="3" class="px-4 py-2 text-center text-gray-500 dark:text-gray-400">No Funding Sources</td>
+                                            </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -756,6 +914,17 @@
                 </div>
             </div>
         </div>
+        <!-- Modal for Funding Source Tasks -->
+        <div id="fundingTasksModal" class="fixed inset-0 hidden bg-gray-900 bg-opacity-50 backdrop-blur-sm z-50 flex justify-center items-center transition-opacity duration-300 ease-out">
+            <div id="fundingTasksContent"
+                class="opacity-0 scale-95 transform transition-all duration-300 ease-out bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-2xl w-full max-w-md">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 id="fundingTasksTitle" class="text-xl font-semibold text-gray-800 dark:text-gray-100"></h2>
+                    <button type="button" onclick="closeFundingTasksModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100 text-2xl font-bold">&times;</button>
+                </div>
+                <ul id="fundingTasksList" class="mb-2 text-gray-700 dark:text-gray-200 list-disc pl-5" style="max-height: 500px; overflow-y: auto;"></ul>
+            </div>
+        </div>
     </div>
 <script>
     window.dashboardData = {
@@ -771,9 +940,146 @@
         userAssignment: {!! json_encode($userAssignment) !!},
         taskTrends: {!! json_encode($taskTrends) !!},
         priorityHistory: {!! json_encode($priorityHistory) !!},
-    };
+        fundingSources: {!! json_encode($fundingSources) !!},
+        projectsByStatus: {
+                "In Progress": {!! \App\Models\Project::where('status', 'In Progress')->get()->map(function($p) {
+                    return [
+                        'id' => $p->id,
+                        'name' => $p->proj_name,
+                        'status' => $p->status,
+                        'created_at' => $p->created_at,
+                    ];
+                })->toJson() !!},
+                "Completed": {!! \App\Models\Project::where('status', 'Completed')->get()->map(function($p) {
+                    return [
+                        'id' => $p->id,
+                        'name' => $p->proj_name,
+                        'status' => $p->status,
+                        'created_at' => $p->created_at,
+                    ];
+                })->toJson() !!},
+                "Deferred": {!! \App\Models\Project::where('status', 'Deferred')->get()->map(function($p) {
+                    return [
+                        'id' => $p->id,
+                        'name' => $p->proj_name,
+                        'status' => $p->status,
+                        'created_at' => $p->created_at,
+                    ];
+                })->toJson() !!}
+            }
+        };
+    window.dashboardData.projectsByType = {!! $projectsByType->toJson() !!};    
+    window.dashboardData.tasksByFundingSource = @json($tasksByFundingSource);
+    window.dashboardData.userTasksByAssignee = @json($userTasksByAssignee);
 </script>
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.progress-bar').forEach(function(bar) {
+                setTimeout(function() {
+                    bar.style.transition = 'width 0.7s cubic-bezier(.4,0,.2,1)';
+                    bar.style.width = bar.dataset.percent + '%';
+                }, 100); // Delay for smooth effect
+            });
+
+           function renderUserTasks(userName) {
+                const progressBars = document.getElementById('user-progress-bars');
+                const taskDetails = document.getElementById('user-task-details');
+                const tbody = document.getElementById('userTaskTableBody');
+                if (userName === 'all') {
+                    progressBars.style.display = '';
+                    taskDetails.style.display = 'none';
+                    return;
+                }
+                progressBars.style.display = 'none';
+                taskDetails.style.display = 'block';
+                tbody.innerHTML = '';
+                let allTasks = [];
+                const users = window.dashboardData.userTasksByAssignee || [];
+                const user = users.find(u => u.name === userName);
+                if (user && user.tasks) {
+                    allTasks = user.tasks.map(task => ({...task, user: user.name}));
+                }
+                if (allTasks.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-8 text-center text-gray-400 dark:text-gray-500">No tasks found.</td></tr>`;
+                    return;
+                }
+                allTasks.forEach(task => {
+                    // Format due date as "Month Day, Year"
+                    let formattedDueDate = '';
+                    if (task.due_date) {
+                        const dateObj = new Date(task.due_date);
+                        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                        formattedDueDate = dateObj.toLocaleDateString(undefined, options);
+                    }
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-blue-50 dark:hover:bg-gray-900 transition">
+                            <td class="px-4 py-2 text-sm text-indigo-700 dark:text-indigo-300">${task.project_name || ''}</td>
+                            <td class="px-4 py-2 text-sm font-semibold text-gray-900 dark:text-white">${task.task_name || ''}</td>
+                            <td class="px-4 py-2 text-sm">
+                                <span class="px-2 py-1 rounded-full text-xs font-bold
+                                    ${task.status === 'Completed' ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' :
+                                    task.status === 'For Checking' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300' :
+                                    task.status === 'For Revision' ? 'bg-pink-100 text-pink-700 dark:bg-pink-900 dark:text-pink-300' :
+                                    'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'}">
+                                    ${task.status || ''}
+                                </span>
+                            </td>
+                            <td class="px-4 py-2 text-sm">
+                                <span class="px-2 py-1 rounded-full text-xs font-bold
+                                    ${task.priority === 'High' ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300' :
+                                    task.priority === 'Normal' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300' :
+                                    'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'}">
+                                    ${task.priority || ''}
+                                </span>
+                            </td>
+                            <td class="px-4 py-2 text-sm font-semibold text-red-700 dark:text-red-300">${formattedDueDate}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // Initial render
+            renderUserTasks('all');
+
+            // Filter event
+            document.getElementById('userProgressFilter').addEventListener('change', function(e) {
+                renderUserTasks(e.target.value);
+            });
+
+            // List all filter/select element IDs you want to persist
+            const persistentFilters = [
+                'userProgressFilter',
+                'projectStatusTimeFilter',
+                'projectStatusChartType',
+                'projectTypeTimeFilter',
+                'projectTypeChartType',
+                'trendsPeriodJump',
+                'taskPriorityProject',
+                'taskPriorityChartType',
+                'taskStatusProject',
+                'taskStatusChartType',
+                'priorityTrendsPeriodJump',
+                'statusTrendsPeriodJump'
+            ];
+
+            // Restore saved values on load
+            persistentFilters.forEach(id => {
+                const el = document.getElementById(id);
+                if (el && localStorage.getItem('dashboard_' + id)) {
+                    el.value = localStorage.getItem('dashboard_' + id);
+                    // Optionally, trigger change event if your JS relies on it
+                    el.dispatchEvent(new Event('change'));
+                }
+                // Save value on change
+                if (el) {
+                    el.addEventListener('change', function() {
+                        localStorage.setItem('dashboard_' + id, el.value);
+                    });
+                }
+            });
+
+
+        });
     function exportDashboardToPDF(containerId, filename) {
         const container = document.getElementById(containerId);
         const tables = container.querySelectorAll('table.exportable-table');

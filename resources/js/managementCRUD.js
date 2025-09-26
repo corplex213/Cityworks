@@ -46,7 +46,15 @@ function saveTask(tableWrapper) {
             otherFundingSource = otherInput ? otherInput.value : null;
         }
 
-        if (!taskNameInput || !startDateInput || !dueDateInput || !priorityElement || !statusElement || (projectType === 'POW' && !budgetInput)) {
+        const isStaff = window.CURRENT_USER_ROLE === 'Staff';
+        if (
+            !taskNameInput ||
+            !startDateInput ||
+            !dueDateInput ||
+            !priorityElement ||
+            !statusElement ||
+            (projectType === 'POW' && !isStaff && !budgetInput)
+        ) {
             console.error('Missing required elements in row:', row);
             return;
         }
@@ -66,7 +74,7 @@ function saveTask(tableWrapper) {
         }
 
         const budgetValue = projectType === 'POW'
-            ? (parseFloat(budgetInput.value.replace(/[^0-9.]/g, '')) || 0)
+            ? (budgetInput ? (parseFloat(budgetInput.value.replace(/[^0-9.]/g, '')) || 0) : null)
             : null;
 
         // Detect changes for main task
@@ -77,7 +85,11 @@ function saveTask(tableWrapper) {
             dueDateInput.value !== (dueDateInput.getAttribute('data-old-value') || '') ||
             priorityElement.textContent !== (priorityElement.getAttribute('data-old-value') || '') ||
             statusElement.textContent !== (statusElement.getAttribute('data-old-value') || '') ||
-            (projectType === 'POW' && budgetValue !== Number(budgetInput.getAttribute('data-old-value') || 0))
+            (
+                    projectType === 'POW' &&
+                    budgetInput &&
+                    budgetValue !== Number(budgetInput.getAttribute('data-old-value') || 0)
+                )
         ) {
             isRowChanged = true;
         }
@@ -118,7 +130,7 @@ function saveTask(tableWrapper) {
                 !subtaskDueDateInput ||
                 !subtaskPriorityElement ||
                 !subtaskStatusElement ||
-                (projectType === 'POW' && !subtaskBudgetInput)
+                (projectType === 'POW' && !isStaff && !subtaskBudgetInput)
             ) {
                 console.error('Missing required elements in subtask row:', nextRow);
                 nextRow = nextRow.nextElementSibling;
@@ -142,7 +154,7 @@ function saveTask(tableWrapper) {
             }
 
             const subtaskBudgetValue = projectType === 'POW'
-                ? (parseFloat(subtaskBudgetInput.value.replace(/[^0-9.]/g, '')) || 0)
+                ? (subtaskBudgetInput ? (parseFloat(subtaskBudgetInput.value.replace(/[^0-9.]/g, '')) || 0) : null)
                 : null;
 
             // Detect changes for subtask
@@ -153,7 +165,11 @@ function saveTask(tableWrapper) {
                 subtaskDueDateInput.value !== (subtaskDueDateInput.getAttribute('data-old-value') || '') ||
                 subtaskPriorityElement.textContent !== (subtaskPriorityElement.getAttribute('data-old-value') || '') ||
                 subtaskStatusElement.textContent !== (subtaskStatusElement.getAttribute('data-old-value') || '') ||
-                (projectType === 'POW' && subtaskBudgetInput && subtaskBudgetValue !== Number(subtaskBudgetInput.getAttribute('data-old-value') || 0))
+                (
+                    projectType === 'POW' &&
+                    subtaskBudgetInput &&
+                    subtaskBudgetValue !== Number(subtaskBudgetInput.getAttribute('data-old-value') || 0)
+                )
             ) {
                 isSubtaskChanged = true;
             }

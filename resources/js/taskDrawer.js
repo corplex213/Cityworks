@@ -84,11 +84,12 @@ const closeTaskDetailsDrawer = () => taskDrawerHandler.close();
     function createCommentElement(comment, isReply = false) {
 
         const commentDiv = document.createElement('div');
-        // All replies will have the same indentation level (ml-12)
         commentDiv.className = `bg-white dark:bg-gray-700 rounded-lg shadow p-4 mb-4 ${isReply ? 'ml-12' : ''}`;
         commentDiv.setAttribute('data-comment-id', comment.id);
-
         const isCurrentUser = comment.user_id === window.CURRENT_USER_ID;
+        const isStaff = (window.CURRENT_USER_ROLE === 'Staff');
+        const isPOW = (window.projectType === 'POW');
+        const restrictDownload = isStaff && isPOW;
 
         commentDiv.innerHTML = `
             <div class="flex items-start space-x-3">
@@ -114,7 +115,7 @@ const closeTaskDetailsDrawer = () => taskDrawerHandler.close();
                                     </svg>
                                 </button>
                             ` : ''}
-                           ${isCurrentUser ? `
+                            ${isCurrentUser ? `
                             <button onclick="editComment(${comment.id})" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
@@ -130,19 +131,29 @@ const closeTaskDetailsDrawer = () => taskDrawerHandler.close();
                     </div>
                     
                     <div class="mt-2 text-gray-700 dark:text-white whitespace-pre-wrap">${formatMentions(comment.content)}</div>
-                        ${comment.attachments && comment.attachments.length > 0 ? `
-                            <div class="mt-2 flex flex-wrap gap-2">
-                                ${comment.attachments.map(att => {
-                                    const isImage = /\.(jpg|jpeg|png|gif)$/i.test(att.file_name);
-                                    return isImage
-                                        ? `<a href="/storage/${att.file_path}" target="_blank"><img src="/storage/${att.file_path}" alt="${att.file_name}" style="max-height:80px;max-width:120px;border-radius:4px;border:1px solid #ccc;margin-right:8px;" /></a>`
-                                        : `<a href="/storage/${att.file_path}" target="_blank" class="inline-flex items-center px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-sm text-blue-600 dark:text-blue-400 hover:underline">
-                                            <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.586-6.586a4 4 0 10-5.656-5.656l-6.586 6.586a6 6 0 108.486 8.486l6.586-6.586"></path></svg>
-                                            ${att.file_name}
-                                        </a>`;
-                                }).join('')}
-                            </div>
-                        ` : ''}
+                    ${comment.attachments && comment.attachments.length > 0 ? `
+                        <div class="mt-2 flex flex-wrap gap-2">
+                            ${comment.attachments.map(att => {
+                                const isImage = /\.(jpg|jpeg|png|gif)$/i.test(att.file_name);
+                                if (isImage) {
+                                    // Images are always viewable
+                                    return `<a href="/storage/${att.file_path}" target="_blank"><img src="/storage/${att.file_path}" alt="${att.file_name}" style="max-height:80px;max-width:120px;border-radius:4px;border:1px solid #ccc;margin-right:8px;" /></a>`;
+                                } else if (!restrictDownload) {
+                                    // Non-images: allow download unless restricted
+                                    return `<a href="/storage/${att.file_path}" target="_blank" class="inline-flex items-center px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                                        <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.586-6.586a4 4 0 10-5.656-5.656l-6.586 6.586a6 6 0 108.486 8.486l6.586-6.586"></path></svg>
+                                        ${att.file_name}
+                                    </a>`;
+                                } else {
+                                    // Restricted: show file name only, no link
+                                    return `<span class="inline-flex items-center px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-sm text-gray-400 cursor-not-allowed">
+                                        <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.586-6.586a4 4 0 10-5.656-5.656l-6.586 6.586a6 6 0 108.486 8.486l6.586-6.586"></path></svg>
+                                        ${att.file_name}
+                                    </span>`;
+                                }
+                            }).join('')}
+                        </div>
+                    ` : ''}
 
 
                     <!-- Reply Form (Hidden by default) -->
@@ -339,7 +350,13 @@ const closeTaskDetailsDrawer = () => taskDrawerHandler.close();
         const taskId = document.getElementById('taskDetailsDrawer').getAttribute('data-current-row');
         const formData = new FormData();
         formData.append('content', newComment);
-        commentAttachments.forEach(file => formData.append('attachments[]', file));
+
+        // Restrict attachments for STAFF in POW
+        const isStaff = (window.CURRENT_USER_ROLE === 'Staff');
+        const isPOW = (window.projectType === 'POW');
+        if (!(isStaff && isPOW)) {
+            commentAttachments.forEach(file => formData.append('attachments[]', file));
+        }
 
         for (let pair of formData.entries()) {
             console.log(pair[0], pair[1]);
@@ -460,11 +477,16 @@ function loadFiles() {
         const fileDiv = document.createElement('div');
         fileDiv.className = 'bg-white dark:bg-gray-800 rounded-lg shadow p-4';
         fileDiv.setAttribute('data-file-id', file.id);
-        
+
         const fileExtension = file.name.split('.').pop().toLowerCase();
         const fileIcon = getFileIcon(fileExtension);
         const fileSize = formatFileSize(file.size);
-        
+
+        // Restrict download for STAFF users in POW activities
+        const isStaff = (window.CURRENT_USER_ROLE === 'Staff');
+        const isPOW = (window.projectType === 'POW');
+        const showDownload = !(isStaff && isPOW);
+
         fileDiv.innerHTML = `
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
@@ -479,11 +501,13 @@ function loadFiles() {
                     </div>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <button onclick="downloadFile(${file.id})" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
+                    ${showDownload ? `
+                        <button onclick="downloadFile(${file.id})" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    ` : ''}
                     ${file.user_id === window.CURRENT_USER_ID ? `
                         <button onclick="deleteFile(${file.id})" class="text-red-500 hover:text-red-700">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -494,7 +518,7 @@ function loadFiles() {
                 </div>
             </div>
         `;
-        
+
         return fileDiv;
     }
 

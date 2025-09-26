@@ -75,14 +75,6 @@ document.addEventListener('DOMContentLoaded', function() {
             arrow: true,
             delay: [100, 100],
         });
-        tippy('#average-time', {
-            content: 'Indicates the average number of hours it takes to complete a task from start to finish.',
-            placement: 'top',
-            theme: 'light-border',
-            animation: 'scale',
-            arrow: true,
-            delay: [100, 100],
-        });
         tippy('#overdue-task', {
             content: 'This section lists all tasks that have missed their deadlines and are still incomplete.',
             placement: 'top',
@@ -267,9 +259,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             if (trendsData.length > 0) renderWeeklyChart();
 
-
-            
-        
             // Project Status Chart
             const projectStatusCtx = document.getElementById('projectStatusChart').getContext('2d');
             let projectStatusChart = new Chart(projectStatusCtx, {
@@ -451,6 +440,41 @@ document.addEventListener('DOMContentLoaded', function() {
                 updateProjectStatusChart(e.target.value);
             });
 
+            document.getElementById('projectStatusChart').onclick = function(evt) {
+                const points = projectStatusChart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
+                if (points.length) {
+                    const idx = points[0].index;
+                    const statusLabels = projectStatusChart.data.labels;
+                    const status = statusLabels[idx];
+                    const projects = window.dashboardData.projectsByStatus[status] || [];
+                    openProjectStatusModal(status, projects);
+                }
+            };
+
+            function openProjectStatusModal(status, projects) {
+                const modal = document.getElementById('fundingTasksModal');
+                const content = document.getElementById('fundingTasksContent');
+                const title = document.getElementById('fundingTasksTitle');
+                const list = document.getElementById('fundingTasksList');
+
+                title.textContent = `Activities with status "${status}"`;
+                list.innerHTML = projects.length
+                    ? projects.map(p => `
+                        <li style="margin-bottom:10px;">
+                            <strong>${p.name}</strong>
+                            <span style="margin-left:8px; padding:2px 8px; border-radius:8px; font-size:11px; background:#e5e7eb; color:#222; display:inline-block;">
+                                Created: ${formatDate(p.created_at)}
+                            </span>
+                        </li>
+                    `).join('')
+                    : '<li>No activities found.</li>';
+
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    content.classList.remove('opacity-0', 'scale-95');
+                }, 10);
+            }
+
             // Project Type Chart
             const projectTypeCtx = document.getElementById('projectTypeChart').getContext('2d');
             let projectTypeChart = new Chart(projectTypeCtx, {
@@ -495,6 +519,40 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Store project task data
             const projectTaskData = window.dashboardData.projectTaskData;
+
+            function openProjectTypeModal(type, projects) {
+                const modal = document.getElementById('fundingTasksModal');
+                const content = document.getElementById('fundingTasksContent');
+                const title = document.getElementById('fundingTasksTitle');
+                const list = document.getElementById('fundingTasksList');
+
+                title.textContent = `Activities of type "${type}"`;
+                list.innerHTML = projects.length
+                    ? projects.map(p => `
+                        <li style="margin-bottom:10px;">
+                            <strong>${p.name}</strong>
+                            <span style="margin-left:8px; padding:2px 8px; border-radius:8px; font-size:11px; background:#e5e7eb; color:#222; display:inline-block;">
+                                Created: ${formatDate(p.created_at)}
+                            </span>
+                        </li>
+                    `).join('')
+                    : '<li>No activities found.</li>';
+
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    content.classList.remove('opacity-0', 'scale-95');
+                }, 10);
+            }
+            document.getElementById('projectTypeChart').onclick = function(evt) {
+                const points = projectTypeChart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
+                if (points.length) {
+                    const idx = points[0].index;
+                    const typeLabels = projectTypeChart.data.labels;
+                    const type = typeLabels[idx];
+                    const projects = window.dashboardData.projectsByType[type] || [];
+                    openProjectTypeModal(type, projects);
+                }
+            };
 
             // Task Priority Chart
             const taskPriorityCtx = document.getElementById('taskPriorityChart').getContext('2d');
@@ -698,6 +756,66 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
 
+            document.getElementById('taskStatusChart').onclick = function(evt) {
+                const points = taskStatusChart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
+                if (points.length) {
+                    const idx = points[0].index;
+                    const statusLabels = taskStatusChart.data.labels.length > 1
+                        ? taskStatusChart.data.labels // bar chart: ['All Projects'] or project name
+                        : ['Completed', 'For Checking', 'For Revision', 'Deferred']; // pie chart
+                    // For pie chart, status is by index; for bar, use dataset label
+                    let status;
+                    if (taskStatusChart.config.type === 'pie') {
+                        status = statusLabels[idx];
+                    } else {
+                        status = taskStatusChart.data.datasets[idx].label;
+                    }
+                    // Get selected project (or 'all')
+                    const projectId = document.getElementById('taskStatusProject').value;
+                    let tasks = [];
+                    if (projectId === 'all') {
+                        Object.values(window.dashboardData.projectTaskData).forEach(project => {
+                            if (project.tasks && Array.isArray(project.tasks)) {
+                                tasks = tasks.concat(project.tasks.filter(t => t.status === status));
+                            }
+                        });
+                    } else {
+                        const project = window.dashboardData.projectTaskData[projectId];
+                        if (project && project.tasks) {
+                            tasks = project.tasks.filter(t => t.status === status);
+                        }
+                    }
+                    openTaskStatusModal(status, tasks);
+                }
+            };
+
+            function openTaskStatusModal(status, tasks) {
+                const modal = document.getElementById('fundingTasksModal');
+                const content = document.getElementById('fundingTasksContent');
+                const title = document.getElementById('fundingTasksTitle');
+                const list = document.getElementById('fundingTasksList');
+
+                title.textContent = `Tasks with "${status}" Status`;
+                list.innerHTML = tasks.length
+                    ? tasks.map(t => `
+                        <li style="margin-bottom:10px;">
+                            <strong>${t.name}</strong> (${t.project_name || ''})
+                            <span style="margin-left:8px; padding:2px 8px; border-radius:8px; font-size:11px; font-weight:500; background:${getStatusColor(t.status)}; color:#fff; display:inline-block;">
+                                ${t.status}
+                            </span>
+                            <span style="margin-left:8px; padding:2px 8px; border-radius:8px; font-size:11px; background:#e5e7eb; color:#222; display:inline-block;">
+                                Due: ${formatDate(t.due_date)}
+                            </span>
+                        </li>
+                    `).join('')
+                    : '<li>No tasks found.</li>';
+
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    content.classList.remove('opacity-0', 'scale-95');
+                }, 10);
+            }
+
             // Function to update task priority chart and analytics
             function updateTaskPriorityChart(projectId) {
                 const data = projectId === 'all' 
@@ -761,6 +879,60 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('lowPriorityPercent').textContent = 
                     total ? `${((data['Low'] || 0) / total * 100).toFixed(1)}%` : '0%';
             }
+
+            document.getElementById('taskPriorityChart').onclick = function(evt) {
+                const points = taskPriorityChart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
+                if (points.length) {
+                    const idx = points[0].index;
+                    const priorityLabels = taskPriorityChart.data.labels;
+                    const priority = priorityLabels[idx];
+                    // Get selected project (or 'all')
+                    const projectId = document.getElementById('taskPriorityProject').value;
+                    let tasks = [];
+                    if (projectId === 'all') {
+                        // Aggregate tasks from all projects
+                        Object.values(window.dashboardData.projectTaskData).forEach(project => {
+                            if (project.tasks && Array.isArray(project.tasks)) {
+                                tasks = tasks.concat(project.tasks.filter(t => t.priority === priority));
+                            }
+                        });
+                    } else {
+                        const project = window.dashboardData.projectTaskData[projectId];
+                        if (project && project.tasks) {
+                            tasks = project.tasks.filter(t => t.priority === priority);
+                        }
+                    }
+                    openTaskPriorityModal(priority, tasks);
+                }
+            };
+
+            function openTaskPriorityModal(priority, tasks) {
+                const modal = document.getElementById('fundingTasksModal');
+                const content = document.getElementById('fundingTasksContent');
+                const title = document.getElementById('fundingTasksTitle');
+                const list = document.getElementById('fundingTasksList');
+
+                title.textContent = `Tasks with "${priority}" Priority`;
+                list.innerHTML = tasks.length
+                    ? tasks.map(t => `
+                        <li style="margin-bottom:10px;">
+                            <strong>${t.name}</strong> (${t.project_name || ''})
+                            <span style="margin-left:8px; padding:2px 8px; border-radius:8px; font-size:11px; font-weight:500; background:${getStatusColor(t.status)}; color:#fff; display:inline-block;">
+                                ${t.status}
+                            </span>
+                            <span style="margin-left:8px; padding:2px 8px; border-radius:8px; font-size:11px; background:#e5e7eb; color:#222; display:inline-block;">
+                                Due: ${formatDate(t.due_date)}
+                            </span>
+                        </li>
+                    `).join('')
+                    : '<li>No tasks found.</li>';
+
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    content.classList.remove('opacity-0', 'scale-95');
+                }, 10);
+            }
+
 
             // Function to update task status chart and analytics
             function updateTaskStatusChart(projectId) {
@@ -1598,7 +1770,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return `${label} (${percent}%)`;
         });
         const userAssignmentCtx = document.getElementById('userAssignmentChart').getContext('2d');
-        new Chart(userAssignmentCtx, {
+        const userAssignmentChart = new Chart(userAssignmentCtx, {
             type: 'pie',
             data: {
                 labels: userLabelsWithPercent,
@@ -1655,7 +1827,161 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
+        document.getElementById('userAssignmentChart').onclick = function(evt) {
+            const points = userAssignmentChart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
+            if (points.length) {
+                const idx = points[0].index;
+                const user = userLabelsWithPercent[idx].split(' (')[0].trim().toLowerCase();
+                const users = window.dashboardData.userTasksByAssignee || [];
+                // Use case-insensitive comparison
+                const userObj = users.find(u => u.name && u.name.trim().toLowerCase() === user);
+                const tasks = userObj && userObj.tasks ? userObj.tasks : [];
+                openFundingTasksModal(userObj ? userObj.name : user, tasks);
+            }
+        };
+
+        // Source of Funding Breakdown Chart (Horizontal Bar)
+            const fundingSourceCtx = document.getElementById('fundingSourceChart').getContext('2d');
+            const fundingSources = window.dashboardData.fundingSources || {};
+            const fundingLabels = Object.keys(fundingSources);
+            const fundingCounts = Object.values(fundingSources);
+
+            const fundingSourceChart = new Chart(fundingSourceCtx, {
+                type: 'bar',
+                data: {
+                    labels: fundingLabels,
+                    datasets: [{
+                        label: 'Number of Tasks',
+                        data: fundingCounts,
+                        backgroundColor: [
+
+                            'rgba(54, 162, 235, 0.8)',
+                            'rgba(255, 99, 132, 0.8)',
+                            'rgba(255, 206, 86, 0.8)',
+                            'rgba(75, 192, 192, 0.8)',
+                            'rgba(153, 102, 255, 0.8)',
+                            'rgba(40, 167, 69, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(40, 167, 69, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Tasks'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Source of Funding'
+                            }
+                        }
+                    }
+                }
+            });
+            function openFundingTasksModal(source, tasks) {
+                const modal = document.getElementById('fundingTasksModal');
+                const content = document.getElementById('fundingTasksContent');
+                const title = document.getElementById('fundingTasksTitle');
+                const list = document.getElementById('fundingTasksList');
+
+                title.textContent = `Tasks for "${source}"`;
+                list.innerHTML = tasks.length
+                    ? tasks.map(t => `
+                        <li style="margin-bottom:10px;">
+                            <strong>${t.name || t.task_name}</strong> (${t.project_name || ''})
+                            <span style="margin-left:8px; padding:2px 8px; border-radius:8px; font-size:11px; font-weight:500; background:${getStatusColor(t.status)}; color:#fff; display:inline-block;">
+                                ${t.status}
+                            </span>
+                            <span style="margin-left:8px; padding:2px 8px; border-radius:8px; font-size:11px; background:#e5e7eb; color:#222; display:inline-block;">
+                                Due: ${formatDate(t.due_date)}
+                            </span>
+                        </li>
+                    `).join('')
+                    : '<li>No tasks found.</li>';
+
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    content.classList.remove('opacity-0', 'scale-95');
+                }, 10);
+            }
+
+            function getStatusColor(status) {
+                if (status === 'Completed') return '#22c55e';   
+                if (status === 'For Checking') return '#3b82f6';    
+                if (status === 'For Revision') return '#facc15';   
+                if (status === 'Deferred') return '#ef4444';       
+                return '#888';
+            }
+
+            function formatDate(dateStr) {
+                if (!dateStr) return '';
+                const d = new Date(dateStr);
+                return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            }
+
+            function closeFundingTasksModal() {
+                const modal = document.getElementById('fundingTasksModal');
+                const content = document.getElementById('fundingTasksContent');
+                content.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            }
+
+            document.getElementById('fundingSourceChart').onclick = function(evt) {
+                const points = fundingSourceChart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
+                if (points.length) {
+                    const idx = points[0].index;
+                    const source = fundingLabels[idx];
+                    const tasks = window.dashboardData.tasksByFundingSource[source] || [];
+                    openFundingTasksModal(source, tasks);
+                }
+            };
+            window.closeFundingTasksModal = closeFundingTasksModal;
+
+            // Re-apply persisted chart types and filters for Project Status
+            updateProjectStatusChart(document.getElementById('projectStatusChartType').value);
+            document.getElementById('projectStatusTimeFilter').dispatchEvent(new Event('change'));
+
+            // Re-apply persisted chart types and filters for Project Type
+            document.getElementById('projectTypeChartType').dispatchEvent(new Event('change'));
+            document.getElementById('projectTypeTimeFilter').dispatchEvent(new Event('change'));
+
+            // Re-apply persisted chart types and filters for Task Priority
+            document.getElementById('taskPriorityChartType').dispatchEvent(new Event('change'));
+            document.getElementById('taskPriorityProject').dispatchEvent(new Event('change'));
+
+            // Re-apply persisted chart types and filters for Task Status
+            document.getElementById('taskStatusChartType').dispatchEvent(new Event('change'));
+            document.getElementById('taskStatusProject').dispatchEvent(new Event('change'));
+
+            // Re-apply persisted filters for trends
+            document.getElementById('trendsPeriodJump').dispatchEvent(new Event('change'));
+            document.getElementById('priorityTrendsPeriodJump').dispatchEvent(new Event('change'));
+            document.getElementById('statusTrendsPeriodJump').dispatchEvent(new Event('change'));
 });
+
 
 function filterProjectsByTime(projects, filter) {
     const now = new Date();

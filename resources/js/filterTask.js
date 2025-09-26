@@ -254,7 +254,14 @@ function renderFilteredTasks(tasks) {
             createTableForUser(user.name, userId, userTasks);
         }
     });
-    if (!hasData) {
+
+    // Check if project is new (no tasks at all)
+    const isNewProject = Object.keys(tasks).length === 0 || Object.values(tasks).every(arr => arr.length === 0);
+
+    // Only show message if not a new project and a filter is applied
+    const filterApplied = localStorage.getItem('lastFilterBy') && localStorage.getItem('lastFilterValue');
+
+    if (!hasData && !isNewProject && filterApplied) {
         container.innerHTML = `
             <div class="text-center text-gray-500 py-10">
                 <span>No tasks found for the selected filter.</span>

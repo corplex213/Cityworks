@@ -8,6 +8,7 @@ use Spatie\Activitylog\Models\Activity;
 use App\Models\Task;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Models\User;
 
 
 class DashboardController extends Controller
@@ -67,28 +68,6 @@ class DashboardController extends Controller
         ->where('due_date', '<', now())
         ->count();
     $overdueRate = $totalTasks > 0 ? round((($overdueCompleted + $overdueUnfinished) / $totalTasks) * 100, 1) : 0;
-
-    // Average Time to Complete Tasks (in hours)
-    $completedTasks = Task::where('status', 'Completed')
-        ->whereNotNull('completion_time')
-        ->whereNotNull('created_at')
-        ->get();
-
-    $validTasks = $completedTasks->filter(function ($task) {
-        return \Carbon\Carbon::parse($task->completion_time)->greaterThan(\Carbon\Carbon::parse($task->created_at));
-    });
-
-    if ($validTasks->count() > 0) {
-        $totalTime = $validTasks->reduce(function ($carry, $task) {
-            $start = \Carbon\Carbon::parse($task->created_at);
-            $end = \Carbon\Carbon::parse($task->completion_time);
-            return $carry + $end->diffInSeconds($start);
-        }, 0);
-        $averageTimeSeconds = $totalTime / $validTasks->count();
-        $averageTimeHours = round($averageTimeSeconds / 3600, 2); // in hours
-    } else {
-        $averageTimeHours = 0;
-    }
 
     // Overdue tasks: not completed and due_date < now
     $overdueTasks = Task::where('status', '!=', 'Completed')
@@ -234,6 +213,8 @@ class DashboardController extends Controller
             $priorities = ['High' => 0, 'Normal' => 0, 'Low' => 0];
             $statuses = ['Completed' => 0, 'For Checking' => 0, 'For Revision' => 0, 'Deferred' => 0];
 
+            // Add this block to collect tasks
+            $tasks = [];
             foreach ($project->tasks as $task) {
                 if (isset($priorities[$task->priority])) {
                     $priorities[$task->priority]++;
@@ -241,14 +222,118 @@ class DashboardController extends Controller
                 if (isset($statuses[$task->status])) {
                     $statuses[$task->status]++;
                 }
+                // Collect all tasks with needed info
+                $tasks[] = [
+                    'id' => $task->id,
+                    'name' => $task->task_name,
+                    'project_name' => $project->proj_name,
+                    'priority' => $task->priority,
+                    'status' => $task->status,
+                    'due_date' => $task->due_date,
+                ];
             }
 
             $projectTaskData[$project->id] = [
                 'name' => $project->proj_name,
                 'priorities' => $priorities,
                 'statuses' => $statuses,
+                'tasks' => $tasks, // <-- Add this line
             ];
         }
+
+        // Source of Funding Breakdown (only POW type projects)
+        $fundingSources = [];
+        $tasksWithPOW = Task::whereHas('project', function($q) {
+            $q->where('proj_type', 'POW');
+        })->get();
+
+        foreach ($tasksWithPOW as $task) {
+            $source = trim($task->source_of_funding ?? '');
+            if ($source === '') {
+                $source = 'No selected funds';
+            }
+            if (!isset($fundingSources[$source])) {
+                $fundingSources[$source] = 0;
+            }
+            $fundingSources[$source]++;
+        }
+
+        // Tasks grouped by source of funding for chart drilldown (only POW type projects)
+            $tasksByFundingSource = Task::with('project')
+                ->whereHas('project', function($q) {
+                    $q->where('proj_type', 'POW');
+                })
+                ->select('id', 'task_name', 'source_of_funding', 'status', 'due_date', 'project_id')
+                ->get()
+                ->groupBy('source_of_funding')
+                ->map(function($tasks) {
+                    return $tasks->map(function($task) {
+                        return [
+                            'id' => $task->id,
+                            'name' => $task->task_name,
+                            'project_name' => $task->project ? $task->project->proj_name : '',
+                            'status' => $task->status,
+                            'due_date' => $task->due_date,
+                        ];
+                    });
+                })
+                ->toArray();
+
+        // Tasks grouped by assigned user for Task assignment Breakdown
+        $userTasksByAssignee = Task::with('project', 'assignee')
+            ->get()
+            ->groupBy(function($task) {
+                return $task->assignee ? $task->assignee->name : 'Unassigned';
+            })
+            ->map(function($tasks, $userName) {
+                $total = $tasks->count();
+                $completed = $tasks->where('status', 'Completed')->count();
+                return [
+                    'name' => $userName,
+                    'total' => $total,
+                    'completed' => $completed,
+                    'tasks' => $tasks->map(function($task) {
+                        return [
+                            'id' => $task->id,
+                            'task_name' => $task->task_name,
+                            'project_name' => $task->project ? $task->project->proj_name : '',
+                            'priority' => $task->priority, // <-- Add this line
+                            'status' => $task->status,
+                            'due_date' => $task->due_date,
+                        ];
+                    })->toArray(),
+                ];
+            })
+            ->values()
+            ->toArray();
+
+        // Ensure all users are present, even those with zero tasks
+        $allUsers = User::all();
+        $userNamesInArray = collect($userTasksByAssignee)->pluck('name')->all();
+
+        foreach ($allUsers as $user) {
+            if (!in_array($user->name, $userNamesInArray)) {
+                $userTasksByAssignee[] = [
+                    'name' => $user->name,
+                    'avatar' => $user->avatar ?? null,
+                    'total' => 0,
+                    'completed' => 0,
+                    'tasks' => [],
+                ];
+            }
+        }
+        
+        // Projects grouped by type for Project Type Breakdown
+        $projectsByType = Project::all()->groupBy('proj_type')->map(function($projects) {
+            return $projects->map(function($p) {
+                return [
+                    'id' => $p->id,
+                    'name' => $p->proj_name,
+                    'created_at' => $p->created_at,
+                    'status' => $p->status,
+                ];
+            });
+        });
 
         return view('dashboard', compact(
             'totalProjects',
@@ -279,7 +364,6 @@ class DashboardController extends Controller
             'overdueRate',
             'completionRate',
             'overdueRate',
-            'averageTimeHours',
             'overdueTasks',
             'totalSubtasks',
             'averageSubtasks',
@@ -287,6 +371,10 @@ class DashboardController extends Controller
             'topTasksWithSubtasks',
             'taskTrends',
             'agingTasks',
+            'fundingSources',
+            'tasksByFundingSource',
+            'userTasksByAssignee',
+            'projectsByType',
         ))->with('projects', Project::select('proj_name', 'created_at')->orderBy('created_at')->get()->toArray());;
     }
 }

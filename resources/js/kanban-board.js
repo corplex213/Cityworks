@@ -281,7 +281,7 @@ function createTaskCard(task) {
             <span class="text-xs text-gray-400">Due Date</span>
             <span class="text-sm text-gray-200">${task.due_date ? new Date(task.due_date).toLocaleDateString() : ''}</span>
         </div>
-        ${window.projectType === 'POW' ? `
+        ${window.projectType === 'POW' && window.CURRENT_USER_ROLE !== 'Staff' ? `
         <div class="flex justify-between items-center">
             <span class="text-xs text-gray-400">Budget</span>
             <span class="text-sm text-gray-200 budget-value">
@@ -360,10 +360,10 @@ function createTaskCard(task) {
                 <option value="Normal" selected>Normal</option>
                 <option value="Low">Low</option>
             </select>
-            ${window.projectType === 'POW' ? `
+            ${window.projectType === 'POW' && window.CURRENT_USER_ROLE !== 'Staff' ? `
             <input type="text" class="subtask-budget-input w-full p-2 rounded border bg-gray-900 text-white" placeholder="Budget" inputmode="decimal">
             ` : ''}
-            ${window.projectType === 'POW' ? `
+            ${window.projectType === 'POW' && window.CURRENT_USER_ROLE !== 'Staff' ? `
             <div>
                 <label class="block text-xs mb-1 text-gray-400">Source of Funding</label>
                 <select class="source-of-funding-input w-full p-2 rounded border mb-2 bg-gray-900 text-white">
@@ -409,17 +409,20 @@ function createTaskCard(task) {
         // Save handler
         form.onsubmit = function(ev) {
             ev.preventDefault();
-            // Get values
-            const title = form.querySelector('.subtask-title-input').value.trim();
-            const startDate = form.querySelector('.subtask-start-date-input').value;
-            const dueDate = form.querySelector('.subtask-due-date-input').value;
-            const priority = form.querySelector('.subtask-priority-input').value;
-            const budget = window.projectType === 'POW'
-                ? form.querySelector('.subtask-budget-input').value.trim()
-                : '0';
+            // Get values safely
+            const title = form.querySelector('.subtask-title-input')?.value.trim() || '';
+            const startDate = form.querySelector('.subtask-start-date-input')?.value || '';
+            const dueDate = form.querySelector('.subtask-due-date-input')?.value || '';
+            const priority = form.querySelector('.subtask-priority-input')?.value || '';
+            const budgetInput = form.querySelector('.subtask-budget-input');
+            const budget = budgetInput ? budgetInput.value.trim() : '0';
 
             // Validate required fields
-            if (!title || !startDate || !dueDate || !priority || (window.projectType === 'POW' && !budget)) {
+            if (!title || !startDate || !dueDate || !priority) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            if (budgetInput && !budget) {
                 alert('Please fill in all required fields.');
                 return;
             }
@@ -533,10 +536,10 @@ function addKanbanTask(userId, statusKey) {
             <option value="Normal" selected>Normal</option>
             <option value="Low">Low</option>
         </select>
-        ${window.projectType === 'POW' ? `
+        ${window.projectType === 'POW' && window.CURRENT_USER_ROLE !== 'Staff' ? `
         <input type="text" class="subtask-budget-input w-full p-2 rounded border bg-gray-900 text-white" placeholder="Budget" inputmode="decimal">
         ` : ''}
-        ${window.projectType === 'POW' ? `
+        ${window.projectType === 'POW' && window.CURRENT_USER_ROLE !== 'Staff' ? `
         <div>
             <label class="block text-xs mb-1 text-gray-400">Source of Funding</label>
             <select class="source-of-funding-input w-full p-2 rounded border mb-2 bg-gray-900 text-white">
@@ -576,56 +579,45 @@ function addKanbanTask(userId, statusKey) {
             });
         }
 
-    // Source of funding handler for POW
-    if (window.projectType === 'POW') {
-        const sourceSelect = form.querySelector('.source-of-funding-input');
-        const otherDiv = form.querySelector('.other-funding-source');
-        sourceSelect.addEventListener('change', function() {
-            if (this.value === 'Others') {
-                this.style.display = 'none';
-                otherDiv.classList.remove('hidden');
-                const otherInput = otherDiv.querySelector('input[name="other_funding_source"]');
-                otherInput.focus();
-                otherInput.ondblclick = () => {
-                    sourceSelect.style.display = '';
-                    otherDiv.classList.add('hidden');
-                    sourceSelect.value = '';
-                };
-            } else {
-                otherDiv.classList.add('hidden');
-                sourceSelect.style.display = '';
-            }
-        });
-    }
-
     // Cancel handler
     form.querySelector('.cancel-subtask-btn').onclick = function() { form.remove(); };
 
     // Save handler
-    form.onsubmit = function(ev) {
+        form.onsubmit = function(ev) {
         ev.preventDefault();
 
         // Disable Save button and show spinner
         const saveBtn = form.querySelector('button[type="submit"]');
         saveBtn.disabled = true;
 
-        // Get values
-        const title = form.querySelector('.subtask-title-input').value.trim();
-        const startDate = form.querySelector('.subtask-start-date-input').value;
-        const dueDate = form.querySelector('.subtask-due-date-input').value;
-        const priority = form.querySelector('.subtask-priority-input').value;
-        const budget = window.projectType === 'POW'
-            ? form.querySelector('.subtask-budget-input').value.trim()
-            : '0';
+        // Get values safely
+        const titleInput = form.querySelector('.subtask-title-input');
+        const startDateInput = form.querySelector('.subtask-start-date-input');
+        const dueDateInput = form.querySelector('.subtask-due-date-input');
+        const priorityInput = form.querySelector('.subtask-priority-input');
+        const budgetInput = form.querySelector('.subtask-budget-input');
+
+        const title = titleInput ? titleInput.value.trim() : '';
+        const startDate = startDateInput ? startDateInput.value : '';
+        const dueDate = dueDateInput ? dueDateInput.value : '';
+        const priority = priorityInput ? priorityInput.value : '';
+        const budget = budgetInput ? budgetInput.value.trim() : '0';
 
         // Validate required fields
-        if (!title || !startDate || !dueDate || !priority || (window.projectType === 'POW' && !budget)) {
+        if (!title || !startDate || !dueDate || !priority) {
             alert('Please fill in all required fields.');
+            saveBtn.disabled = false;
+            return;
+        }
+        if (budgetInput && !budget) {
+            alert('Please fill in all required fields.');
+            saveBtn.disabled = false;
             return;
         }
         // Validate date logic
         if (new Date(dueDate) < new Date(startDate)) {
             alert('Due date cannot be before start date.');
+            saveBtn.disabled = false;
             return;
         }
         // Map statusKey to backend status
@@ -647,9 +639,17 @@ function addKanbanTask(userId, statusKey) {
             status: backendStatus,
             budget: budget
         };
-        if (window.projectType === 'POW') {
-            taskData.source_of_funding = form.querySelector('.source-of-funding-input').value;
-            taskData.other_funding_source = form.querySelector('.other-funding-source input')?.value || null;
+        // Only set funding fields if they exist
+        if (window.projectType === 'POW' && window.CURRENT_USER_ROLE !== 'Staff') {
+            const sourceSelect = form.querySelector('.source-of-funding-input');
+            taskData.source_of_funding = sourceSelect ? sourceSelect.value : null;
+
+            const otherInputDiv = form.querySelector('.other-funding-source');
+            let otherInput = null;
+            if (otherInputDiv) {
+                otherInput = otherInputDiv.querySelector('input[name="other_funding_source"]');
+            }
+            taskData.other_funding_source = otherInput ? otherInput.value : null;
         }
 
         fetch('/tasks', {
